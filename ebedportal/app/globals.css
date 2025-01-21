@@ -4,7 +4,12 @@
 
 @layer components {
   .root-container {
-    @apply flex min-h-screen flex-1 flex-col bg-pattern bg-cover bg-top bg-dark-100 px-5 xs:px-10 md:px-16;
+    @apply pt-3 min-h-screen px-5 md:px-10 sm:px-3 bg-gradient-to-br text-zinc-900 from-white via-gray-100 to-gray-300 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black;
+  }
+  .card-bg {
+    @apply bg-gradient-to-br from-emerald-100/50 via-emerald-200/50 to-emerald-300/50
+    dark:from-emerald-800/50 dark:via-emerald-900/50 dark:to-black/50
+    shadow-lg hover:shadow-xl rounded-lg;
   }
 }
 
@@ -64,8 +69,4 @@
   }
 }
 
-@layer base {
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+
