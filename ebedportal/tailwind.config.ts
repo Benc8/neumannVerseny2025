@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        bebas: "var(--bebas-Neue), sans-serif", // Use your custom variable
+      },
       colors: {
         // Base Colors
         zinc: {

@@ -6,9 +6,17 @@
   .root-container {
     @apply pt-3 min-h-screen px-5 md:px-10 sm:px-3 bg-gradient-to-br text-zinc-900 from-white via-gray-100 to-gray-300 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black;
   }
-  .card-bg {
+  .secondary-text {
+    @apply text-zinc-800 dark:text-zinc-300;
+  }
+  .card-bg-green {
     @apply bg-gradient-to-br from-emerald-100/50 via-emerald-200/50 to-emerald-300/50
     dark:from-emerald-800/50 dark:via-emerald-900/50 dark:to-black/50
+    shadow-lg hover:shadow-xl rounded-lg;
+  }
+  .card-bg-orange {
+    @apply bg-gradient-to-br from-orange-100/50 via-orange-200/50 to-orange-300/50
+    dark:from-orange-800/50 dark:via-orange-900/50 dark:to-black/50
     shadow-lg hover:shadow-xl rounded-lg;
   }
 }

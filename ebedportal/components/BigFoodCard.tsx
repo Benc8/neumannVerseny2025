@@ -7,20 +7,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-const BigFoodCard = () => {
+interface CardProps {
+  color?: string;
+}
+
+const BigFoodCard = ({ color = "green" }: CardProps) => {
   return (
-    <Card className={"card-bg"}>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
+    <Card
+      className={cn(
+        color === "green" ? "card-bg-green" : "card-bg-orange",
+        "flex flex-col md:flex-row items-center md:items-start gap-6",
+      )}
+    >
+      <CardContent className="flex-1 text-center md:text-left">
+        <CardHeader className="text-2xl font-bold">
+          Responsive Layout
+        </CardHeader>
+        <CardDescription className="secondary-text">
+          This is a responsive section where text and image adjust layout based
+          on screen size.
+        </CardDescription>
       </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
+
+      <CardContent className="flex-1 flex items-center justify-center">
+        <img
+          src={"/testImg.jpg"}
+          alt={"sigma"}
+          className="w-full mt-6 max-w-xs rounded-lg shadow-lg "
+        />
+      </CardContent>
     </Card>
   );
 };

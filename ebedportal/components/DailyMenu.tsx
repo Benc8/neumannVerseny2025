@@ -4,23 +4,28 @@ import { intersection } from "ts-interface-checker";
 
 const DailyMenu = () => {
   return (
-    <section className={"flex flex-row gap-3"}>
-      <div className={"flex flex-col gap-2 min-w-1/3"}>
-        <BigFoodCard />
-        <BigFoodCard />
-        <BigFoodCard />
+    <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
+      <div className="lg:col-span-1">
+        <h2 className="text-4xl text-center font-bebas mb-4 ">Levesek</h2>
+        <div className="space-y-6">
+          <BigFoodCard color={"orange"} />
+          <BigFoodCard color={"orange"} />
+          <BigFoodCard color={"orange"} />
+        </div>
       </div>
-      <div className={"flex flex-col gap-2 min-w-1/3"}>
-        <BigFoodCard />
-        <BigFoodCard />
-        <BigFoodCard />
+
+      <div className="lg:col-span-2">
+        <h2 className="text-4xl text-center font-bebas mb-4 ">Főétel</h2>
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+          <BigFoodCard />
+          <BigFoodCard />
+          <BigFoodCard />
+          <BigFoodCard />
+          <BigFoodCard />
+          <BigFoodCard />
+        </div>
       </div>
-      <div className={"flex flex-col gap-2 min-w-1/3"}>
-        <BigFoodCard />
-        <BigFoodCard />
-        <BigFoodCard />
-      </div>
-    </section>
+    </div>
   );
 };
 export default DailyMenu;
