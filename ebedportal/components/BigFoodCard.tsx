@@ -19,7 +19,7 @@ const BigFoodCard = ({ color = "green" }: CardProps) => {
     <Card
       className={cn(
         color === "green" ? "card-bg-green" : "card-bg-orange",
-        "flex flex-col md:flex-row items-center md:items-start gap-6",
+        "flex flex-col sm:flex-row items-center md:items-start gap-6",
       )}
     >
       <CardContent className="flex-1 text-center md:text-left">

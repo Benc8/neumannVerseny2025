@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
@@ -14,8 +15,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
       <div className="root-container">
         <div className="lg:fixed flex flex-row gap-3">
-          <Image src="/testImg.jpg" alt="logo" width={37} height={37} />
-          <h1 className={"text-3xl font-semibold font-bebas"}>EbédPortál</h1>
+          <Image
+            src="/testImg.jpg"
+            alt="logo"
+            width={37}
+            height={37}
+            className={"rounded-lg"}
+          />
+          <Link className={"text-3xl font-semibold font-bebas"} href={"/"}>
+            EbédPortál
+          </Link>
         </div>
         {children}
       </div>

@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const Page = () => {
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -37,7 +38,9 @@ const Page = () => {
       <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <h1 className="font-bebas text-4xl text-center mb-4">Sign In</h1>
+            <h1 className="font-bebas text-4xl text-center mb-4">
+              Bejelentkezés
+            </h1>
 
             {/* Email Field */}
             <FormField
@@ -45,12 +48,12 @@ const Page = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>E-mail</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="example@example.com"
+                      placeholder="pelda@pelda.hu"
                       {...field}
-                      onChange={(e) => setEmail(e.target.value)}
+                      //onChange={(e) => setEmail(e.target.value)}
                       className="border-gray-300 dark:border-gray-700 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </FormControl>
@@ -65,7 +68,7 @@ const Page = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Jelszó</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -82,10 +85,21 @@ const Page = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+              className="w-full py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800
+             text-white font-bold rounded-lg shadow-lg transition-all duration-300
+             transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
             >
-              Submit
+              Bejelentkezés
             </Button>
+            <FormDescription className="text-gray-600 dark:text-gray-400 text-center text-sm mt-4">
+              Nincs még fiókod?{" "}
+              <Link
+                href={"/sign-up"}
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Regisztrálj itt
+              </Link>
+            </FormDescription>
           </form>
         </Form>
       </div>
