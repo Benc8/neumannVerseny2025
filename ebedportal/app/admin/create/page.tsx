@@ -2,28 +2,25 @@
 
 import React from "react";
 import FoodAdd from "@/components/FoodAdd";
-import DatePicker from "@/components/DatePicker";
+import { Calendar } from "@/components/ui/calendar";
 
 const Page = () => {
-  // Set today's date as the initial date
-  let initialDate = new Date();
-
-  // Function to handle date changes
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      console.log("Selected Date:", date.toISOString());
-      initialDate = date;
-      // You can send the updated date to your server or use it as needed
-    }
-  };
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   return (
     <>
-      {/* Pass today's date as the selected date to DatePicker */}
-      <DatePicker selectedDate={initialDate} onDateChange={handleDateChange} />
-      {/* Pass today's date to FoodAdd */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+        <div className={"flex items-start justify-center"}>
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            className="rounded-md border shadow"
+          />
+        </div>
+      </div>
       <FoodAdd
-        date={initialDate.toISOString()}
+        date={date?.toISOString() ?? ""}
         initialValues={{
           name: "Marhapörkölt",
           description: "Finom magyar pörkölt",
