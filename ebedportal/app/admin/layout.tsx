@@ -1,8 +1,19 @@
+"use server";
+
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import AdminTitle from "@/components/AdminTitle";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema";
+import { redirect } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  //const result = await db.select().from(users);
+
   return (
     <SidebarProvider className="flex root-container-admin">
       <AppSidebar />
