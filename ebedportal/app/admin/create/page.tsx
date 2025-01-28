@@ -20,11 +20,11 @@ const Page = () => {
         </div>
       </div>
       <FoodAdd
-        date={date?.toISOString() ?? ""}
+        date={date}
         initialValues={{
           name: "Marhapörkölt",
           description: "Finom magyar pörkölt",
-          category: "main",
+          category: "SOUP",
           image: "https://example.com/image.jpg",
           allergens: ["gluten", "lactose", "nut"],
         }}

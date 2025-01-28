@@ -4,6 +4,8 @@ import { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 
 import localFont from "next/font/local";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 const inter = localFont({
   src: [
@@ -51,12 +53,17 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
+  const session = await auth();
   return (
-    <html lang="hu">
-      <body className={`${inter.className} ${bebasNeue.variable} antialiased`}>
-        {children}
-        <Toaster />
-      </body>
-    </html>
+    <SessionProvider session={session}>
+      <html lang="hu">
+        <body
+          className={`${inter.className} ${bebasNeue.variable} antialiased`}
+        >
+          {children}
+          <Toaster />
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

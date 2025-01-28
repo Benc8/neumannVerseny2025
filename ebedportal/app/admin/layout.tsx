@@ -6,13 +6,18 @@ import AdminTitle from "@/components/AdminTitle";
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  //const result = await db.select().from(users);
+  const session = await auth();
+
+  if (!session) {
+    redirect("/");
+  }
 
   return (
     <SidebarProvider className="flex root-container-admin">

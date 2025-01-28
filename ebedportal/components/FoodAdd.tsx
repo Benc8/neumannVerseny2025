@@ -26,7 +26,7 @@ import {
 import AllergenSelect from "@/components/AllergenSelect";
 
 type FoodAddProps = {
-  date: string; // Date passed as a required prop
+  date: Date; // Date passed as a required prop
   initialValues?: Partial<z.infer<typeof foodSchema>>; // Optional pre-filled values
 };
 
@@ -87,8 +87,8 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
                         <SelectValue placeholder="Válasz kategóriát" />
                       </SelectTrigger>
                       <SelectContent className="bg-gradient-to-bl text-zinc-900 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black">
-                        <SelectItem value="soup">Leves</SelectItem>
-                        <SelectItem value="main">Főétel</SelectItem>
+                        <SelectItem value="SOUP">Leves</SelectItem>
+                        <SelectItem value="MAIN_COURSE">Főétel</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>

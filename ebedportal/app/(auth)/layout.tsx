@@ -1,8 +1,16 @@
 import React, { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = async ({ children }: { children: ReactNode }) => {
+  const session = await auth();
+
+  if (session) {
+    redirect("/");
+  }
+
   return (
     <main>
       <div className="block lg:fixed top-0 right-0 w-full h-52 lg:w-1/2 lg:h-full">

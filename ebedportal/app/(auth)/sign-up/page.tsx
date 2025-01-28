@@ -17,8 +17,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { sighUp, signInWithCredentials } from "@/lib/actions/auth";
+import { toast } from "@/hooks/use-toast";
+import { router } from "next/client";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -28,8 +33,21 @@ const Page = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof signUpSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    const result = await sighUp(values);
+    if (result?.success) {
+      toast({
+        title: "Sikeres regisztráció",
+      });
+
+      router.push("/sign-in");
+    } else {
+      toast({
+        title: "Hiba",
+        description: result?.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const [email, setEmail] = useState("");
