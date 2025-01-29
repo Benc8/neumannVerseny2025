@@ -20,6 +20,7 @@ import Link from "next/link";
 import { signInWithCredentials } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { getServerSideProps } from "@/lib/actions/foodFetch";
 
 const Page = () => {
   const router = useRouter();

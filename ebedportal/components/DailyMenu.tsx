@@ -1,23 +1,59 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BigFoodCard from "@/components/BigFoodCard";
-import { dailyMenus } from "@/database/schema";
 import { getServerSideProps } from "@/lib/actions/foodFetch";
+
+interface Food {
+  id: string;
+  fullName: string;
+  description?: string;
+  type: string;
+  price?: number;
+  imageUrl?: string;
+}
+
+interface DailyMenu {
+  foods: Food[];
+}
 
 const DailyMenu = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [dailyMenu, setDailyMenu] = useState<DailyMenu>({ foods: [] });
+  const [loading, setLoading] = useState(true);
 
-  const handleDateChange = (event) => {
+  const data = await getServerSideProps("2025-01-28");
+  console.log(data);
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDate(event.target.value);
   };
 
-  const dailyMenus = await getServerSideProps();
+  useEffect(() => {
+    const fetchDailyMenu = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/daily-menu?date=${date}`);
+        const data = await response.json();
+        setDailyMenu(data);
+      } catch (error) {
+        console.error("Failed to fetch daily menu:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDailyMenu();
+  }, [date]); // Re-fetch when the date changes
 
   const soups = dailyMenu.foods.filter((food) => food.type === "SOUP");
   const mainCourses = dailyMenu.foods.filter(
     (food) => food.type === "MAIN_COURSE",
   );
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>

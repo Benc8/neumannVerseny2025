@@ -1,20 +1,12 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+"use server";
+
+import { db } from "@/database/drizzle";
 import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
 import { eq } from "drizzle-orm";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-const db = drizzle(pool);
-
-export async function getServerSideProps(context: any) {
-  const { date } = context.query; // Get the date from the query parameter
-
-  // If no date is provided, default to today's date
+export async function getServerSideProps(date: string) {
   const selectedDate = date || new Date().toISOString().split("T")[0];
-
+  console.log(selectedDate);
   const dailyMenu = await db
     .select()
     .from(dailyMenus)

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { getServerSideProps } from "@/lib/actions/foodFetch";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
