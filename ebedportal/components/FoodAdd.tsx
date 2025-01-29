@@ -39,12 +39,15 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
       category: "",
       image: "",
       allergens: [],
+
       ...initialValues, // Merge default values with passed-in props
     },
   });
 
   const onSubmit = (values: z.infer<typeof foodSchema>) => {
-    console.log("Form Data:", { ...values, date });
+    const data = { ...values, date };
+
+    console.log("Form Data:", data);
   };
 
   return (
@@ -129,6 +132,21 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
                       selected={field.value}
                       onChange={field.onChange}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Name Field */}
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Étel ára (opcionális)</FormLabel>
+                  <FormControl>
+                    <Input {...field} type={"number"} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

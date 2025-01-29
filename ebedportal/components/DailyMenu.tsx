@@ -2,28 +2,22 @@
 
 import React, { useState, useEffect } from "react";
 import BigFoodCard from "@/components/BigFoodCard";
+import { dailyMenus, foods } from "@/database/schema";
 import { getServerSideProps } from "@/lib/actions/foodFetch";
+import { Skeleton } from "@/components/ui/skeleton"; // Import the Skeleton component
 
-interface Food {
-  id: string;
-  fullName: string;
-  description?: string;
-  type: string;
-  price?: number;
-  imageUrl?: string;
-}
+type Food = typeof foods.$inferSelect;
 
-interface DailyMenu {
+type TransformedDailyMenu = {
   foods: Food[];
-}
+};
 
 const DailyMenu = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [dailyMenu, setDailyMenu] = useState<DailyMenu>({ foods: [] });
-  const [loading, setLoading] = useState(true);
-
-  const data = await getServerSideProps("2025-01-28");
-  console.log(data);
+  const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>(
+    [],
+  );
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDate(event.target.value);
@@ -33,9 +27,10 @@ const DailyMenu = () => {
     const fetchDailyMenu = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/daily-menu?date=${date}`);
-        const data = await response.json();
-        setDailyMenu(data);
+        const response = await getServerSideProps(date);
+        const data = response.props;
+        // @ts-ignore
+        setDailyMenuData(data.dailyMenu); // Ensure the API returns an array of TransformedDailyMenu
       } catch (error) {
         console.error("Failed to fetch daily menu:", error);
       } finally {
@@ -44,20 +39,16 @@ const DailyMenu = () => {
     };
 
     fetchDailyMenu();
-  }, [date]); // Re-fetch when the date changes
+  }, [date]);
 
-  const soups = dailyMenu.foods.filter((food) => food.type === "SOUP");
-  const mainCourses = dailyMenu.foods.filter(
-    (food) => food.type === "MAIN_COURSE",
-  );
+  // Flatten foods from all menu entries
+  const allFoods = dailyMenuData.flatMap((menu) => menu.foods);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const soups = allFoods.filter((food) => food.type === "SOUP");
+  const mainCourses = allFoods.filter((food) => food.type === "MAIN_COURSE");
 
   return (
     <div>
-      {/* Date Picker */}
       <div className="mb-6">
         <label
           htmlFor="date"
@@ -74,25 +65,34 @@ const DailyMenu = () => {
         />
       </div>
 
-      {/* Menu Grid */}
       <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-        {/* First section: Soups */}
         <div className="lg:col-span-1 xl:col-span-1">
           <h2 className="text-4xl text-center font-bebas mb-4">Levesek</h2>
           <div className="space-y-6">
-            {soups.map((soup) => (
-              <BigFoodCard key={soup.id} food={soup} color={"orange"} />
-            ))}
+            {loading
+              ? Array.from({ length: 3 }).map((_, index) => (
+                  <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                ))
+              : soups.map((soup) => (
+                  <BigFoodCard key={soup.id} food={soup} color={"orange"} />
+                ))}
           </div>
         </div>
 
-        {/* Second section: Main courses */}
         <div className="lg:col-span-1 xl:col-span-2">
           <h2 className="text-4xl text-center font-bebas mb-4">Főételek</h2>
           <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
-            {mainCourses.map((mainCourse) => (
-              <BigFoodCard key={mainCourse.id} food={mainCourse} />
-            ))}
+            {loading
+              ? Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                ))
+              : mainCourses.map((mainCourse) => (
+                  <BigFoodCard
+                    key={mainCourse.id}
+                    food={mainCourse}
+                    color={"green"}
+                  />
+                ))}
           </div>
         </div>
       </div>

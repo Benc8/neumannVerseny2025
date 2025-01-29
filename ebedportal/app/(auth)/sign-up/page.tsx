@@ -125,7 +125,7 @@ const Page = () => {
              text-white font-bold rounded-lg shadow-lg transition-all duration-300
              transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
             >
-              Bejelentkezés
+              Regisztráció
             </Button>
             <FormDescription className="text-gray-600 dark:text-gray-400 text-center text-sm mt-4">
               Van fiókod?{" "}
