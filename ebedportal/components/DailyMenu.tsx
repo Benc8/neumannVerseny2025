@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import BigFoodCard from "@/components/BigFoodCard";
 import { dailyMenus, foods } from "@/database/schema";
 import { getServerSideProps } from "@/lib/actions/foodFetch";
-import { Skeleton } from "@/components/ui/skeleton"; // Import the Skeleton component
+import { Skeleton } from "@/components/ui/skeleton";
+import { Calendar } from "@/components/ui/calendar"; // Import the Skeleton component
 
 type Food = typeof foods.$inferSelect;
 
@@ -13,21 +14,19 @@ type TransformedDailyMenu = {
 };
 
 const DailyMenu = () => {
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>(
     [],
   );
   const [loading, setLoading] = useState(false);
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDate(event.target.value);
-  };
-
   useEffect(() => {
     const fetchDailyMenu = async () => {
       try {
         setLoading(true);
-        const response = await getServerSideProps(date);
+        const response = await getServerSideProps(
+          date?.toISOString().split("T")[0]!,
+        );
         const data = response.props;
         // @ts-ignore
         setDailyMenuData(data.dailyMenu); // Ensure the API returns an array of TransformedDailyMenu
@@ -49,19 +48,12 @@ const DailyMenu = () => {
 
   return (
     <div>
-      <div className="mb-6">
-        <label
-          htmlFor="date"
-          className="block text-lg font-medium text-gray-700"
-        >
-          Select Date:
-        </label>
-        <input
-          type="date"
-          id="date"
-          value={date}
-          onChange={handleDateChange}
-          className="mt-1 p-2 border border-gray-300 rounded-md"
+      <div className={"flex items-start justify-center"}>
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="rounded-md border shadow"
         />
       </div>
 

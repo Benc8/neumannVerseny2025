@@ -6,6 +6,9 @@
   .root-container {
     @apply pt-3 min-h-screen px-5 md:px-10 sm:px-3 bg-gradient-to-br text-zinc-900 from-white via-gray-100 to-gray-300 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black;
   }
+  .portalColors {
+    @apply bg-gradient-to-br text-zinc-900 from-white via-gray-100 to-gray-300 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black;;
+  }
   .root-container-admin {
     @apply pt-3 min-h-screen px-5 md:px-10 sm:px-3 bg-gradient-to-bl text-zinc-900 from-white via-gray-100 to-gray-300 dark:text-zinc-100 dark:from-gray-800 dark:via-gray-900 dark:to-black;
   }

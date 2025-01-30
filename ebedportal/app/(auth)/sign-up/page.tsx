@@ -17,9 +17,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { sighUp, signInWithCredentials } from "@/lib/actions/auth";
+import { sighUp } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
-import { router } from "next/client";
 import { useRouter } from "next/navigation";
 
 const Page = () => {

@@ -40,14 +40,14 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
       category: "",
       image: "",
       allergens: [],
-      price: 0,
 
       ...initialValues, // Merge default values with passed-in props
     },
   });
 
   const onSubmit = async (values: z.infer<typeof foodSchema>) => {
-    await createFood(values, date.toISOString().split("T")[0]);
+    // @ts-ignore
+    await createFood(values, date);
   };
 
   return (

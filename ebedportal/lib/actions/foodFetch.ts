@@ -39,7 +39,7 @@ interface ServerSideProps {
 export async function getServerSideProps(
   date: string,
 ): Promise<ServerSideProps> {
-  const selectedDate = date || new Date().toISOString().split("T")[0];
+  const selectedDate = date;
 
   const result = (await db
     .select()
@@ -60,9 +60,9 @@ export async function getServerSideProps(
   };
 }
 
-export async function createFood(data: foodSchema, date: string) {
+export async function createFood(data: foodSchema, date: Date) {
   try {
-    const selectedDate = date || new Date().toISOString().split("T")[0];
+    const selectedDate = date?.toISOString().split("T")[0];
 
     // Construct the food image URL
     const imageUrl = config.env.imagekit.urlEndpoint + data.image;
