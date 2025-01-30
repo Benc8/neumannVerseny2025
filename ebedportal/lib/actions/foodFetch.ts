@@ -3,6 +3,16 @@
 import { db } from "@/database/drizzle";
 import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import config from "@/lib/config";
+
+interface foodSchema {
+  name: string;
+  description: string;
+  category: string;
+  image: string;
+  allergens: string[];
+  price: number;
+}
 
 // Define types based on your database schema
 type DailyMenu = typeof dailyMenus.$inferSelect;
@@ -48,4 +58,70 @@ export async function getServerSideProps(
       selectedDate,
     },
   };
+}
+
+export async function createFood(data: foodSchema, date: string) {
+  try {
+    const selectedDate = date || new Date().toISOString().split("T")[0];
+
+    // Construct the food image URL
+    const imageUrl = config.env.imagekit.urlEndpoint + data.image;
+
+    // Insert the food and return its ID
+    const [newFood] = await db
+      .insert(foods)
+      .values({
+        fullName: data.name,
+        description: data.description,
+        category: data.category,
+        imageUrl: imageUrl,
+        allergens: data.allergens,
+        type: data.category,
+        price: data.price,
+      })
+      .returning({ foodId: foods.id }) // Get the inserted food's ID
+      .execute();
+
+    if (!newFood?.foodId) {
+      throw new Error("Failed to insert food.");
+    }
+
+    // Check if a daily menu exists for the selected date
+    let dailyMenuEntry = await db
+      .select()
+      .from(dailyMenus)
+      .where(eq(dailyMenus.date, selectedDate))
+      .execute();
+
+    let dailyMenuId: string;
+
+    if (dailyMenuEntry.length === 0) {
+      // Create a new daily menu for the date
+      const [newDailyMenu] = await db
+        .insert(dailyMenus)
+        .values({ date: selectedDate })
+        .returning({ dailyMenuId: dailyMenus.id })
+        .execute();
+
+      if (!newDailyMenu?.dailyMenuId) {
+        throw new Error("Failed to create daily menu.");
+      }
+      dailyMenuId = newDailyMenu.dailyMenuId;
+    } else {
+      dailyMenuId = dailyMenuEntry[0].id;
+    }
+
+    // Insert the relation into dailyMenuFoods
+    await db
+      .insert(dailyMenuFoods)
+      .values({
+        dailyMenuId: dailyMenuId,
+        foodId: newFood.foodId,
+      })
+      .execute();
+
+    console.log("Food and relation added successfully");
+  } catch (error) {
+    console.error("Error creating food:", error);
+  }
 }

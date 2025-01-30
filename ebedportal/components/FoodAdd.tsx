@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AllergenSelect from "@/components/AllergenSelect";
+import { createFood } from "@/lib/actions/foodFetch";
 
 type FoodAddProps = {
   date: Date; // Date passed as a required prop
@@ -39,15 +40,14 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
       category: "",
       image: "",
       allergens: [],
+      price: 0,
 
       ...initialValues, // Merge default values with passed-in props
     },
   });
 
-  const onSubmit = (values: z.infer<typeof foodSchema>) => {
-    const data = { ...values, date };
-
-    console.log("Form Data:", data);
+  const onSubmit = async (values: z.infer<typeof foodSchema>) => {
+    await createFood(values, date.toISOString().split("T")[0]);
   };
 
   return (
@@ -138,7 +138,6 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
               )}
             />
 
-            {/* Name Field */}
             <FormField
               control={form.control}
               name="price"
@@ -146,7 +145,11 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
                 <FormItem>
                   <FormLabel>Étel ára (opcionális)</FormLabel>
                   <FormControl>
-                    <Input {...field} type={"number"} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))} // Convert to number
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
