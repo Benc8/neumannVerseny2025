@@ -2,10 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import BigFoodCard from "@/components/BigFoodCard";
-import { dailyMenus, foods } from "@/database/schema";
+import { foods } from "@/database/schema";
 import { getServerSideProps } from "@/lib/actions/foodFetch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar } from "@/components/ui/calendar"; // Import the Skeleton component
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format, addDays, subDays } from "date-fns";
 
 type Food = typeof foods.$inferSelect;
 
@@ -14,7 +21,7 @@ type TransformedDailyMenu = {
 };
 
 const DailyMenu = () => {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date>(new Date());
   const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>(
     [],
   );
@@ -24,12 +31,10 @@ const DailyMenu = () => {
     const fetchDailyMenu = async () => {
       try {
         setLoading(true);
-        const response = await getServerSideProps(
-          date?.toISOString().split("T")[0]!,
-        );
+        const formattedDate = date.toLocaleDateString("en-CA"); // Ensure correct format
+        const response = await getServerSideProps(formattedDate);
         const data = response.props;
-        // @ts-ignore
-        setDailyMenuData(data.dailyMenu); // Ensure the API returns an array of TransformedDailyMenu
+        setDailyMenuData(data.dailyMenu);
       } catch (error) {
         console.error("Failed to fetch daily menu:", error);
       } finally {
@@ -40,6 +45,10 @@ const DailyMenu = () => {
     fetchDailyMenu();
   }, [date]);
 
+  const changeDate = (days: number) => {
+    setDate((prevDate) => addDays(prevDate, days));
+  };
+
   // Flatten foods from all menu entries
   const allFoods = dailyMenuData.flatMap((menu) => menu.foods);
 
@@ -48,13 +57,30 @@ const DailyMenu = () => {
 
   return (
     <div>
-      <div className={"flex items-start justify-center"}>
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="rounded-md border shadow"
-        />
+      <div className="flex items-center justify-center space-x-4 mb-4">
+        <Button onClick={() => changeDate(-1)}>Previous</Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="flex flex-col h-auto">
+              {format(date, "eeee")}
+              <span className="text-sm text-gray-500">
+                {format(date, "yyyy-MM-dd")}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className={"portalColors"}>
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(selectedDate) => {
+                if (selectedDate) {
+                  setDate(selectedDate);
+                }
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+        <Button onClick={() => changeDate(1)}>Next</Button>
       </div>
 
       <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">

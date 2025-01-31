@@ -3,8 +3,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import AdminTitle from "@/components/AdminTitle";
-import { db } from "@/database/drizzle";
-import { users } from "@/database/schema";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import AllergenSelect from "@/components/AllergenSelect";
 import { createFood } from "@/lib/actions/foodFetch";
+import { toast } from "@/hooks/use-toast";
 
 type FoodAddProps = {
   date: Date; // Date passed as a required prop
@@ -46,8 +47,21 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
   });
 
   const onSubmit = async (values: z.infer<typeof foodSchema>) => {
-    // @ts-ignore
-    await createFood(values, date);
+    try {
+      console.log(date);
+      // @ts-ignore
+      await createFood(values, date);
+      toast({
+        title: "Étel sikeresen hozzáadva",
+        description: "Az étel sikeresen hozzáadva a menühöz",
+      });
+    } catch (error) {
+      toast({
+        title: "Hiba az étel hozzáadása során",
+        description: "Az étel hozzáadása sikertelen",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
