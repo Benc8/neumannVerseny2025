@@ -5,6 +5,23 @@ import { AppSidebar } from "@/components/app-sidebar";
 import AdminTitle from "@/components/AdminTitle";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import {
+  Beef,
+  Beer,
+  Cake,
+  Candy,
+  Coffee,
+  Fish,
+  IceCream,
+  Milk,
+  MilkOff,
+  Nut,
+  Pizza,
+  Salad,
+  Soup,
+  Wheat,
+  WheatOff,
+} from "lucide-react";
 
 export default async function Layout({
   children,

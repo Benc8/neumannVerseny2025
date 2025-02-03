@@ -26,6 +26,7 @@ import {
 import AllergenSelect from "@/components/AllergenSelect";
 import { createFood } from "@/lib/actions/foodFetch";
 import { toast } from "@/hooks/use-toast";
+import IconSelect from "@/components/IconSelect";
 
 type FoodAddProps = {
   date: Date; // Date passed as a required prop
@@ -41,6 +42,7 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
       category: "",
       image: "",
       allergens: [],
+      type: "",
 
       ...initialValues, // Merge default values with passed-in props
     },
@@ -170,21 +172,39 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
               )}
             />
           </div>
-
-          {/* Image URL Field */}
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Kép</FormLabel>
-                <FormControl>
-                  <ImageUpload onFileChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Image URL Field */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kép</FormLabel>
+                  <FormControl>
+                    <ImageUpload onFileChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Allergen Selection */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Válassz ikont kép hiánya esetén</FormLabel>
+                  <FormControl>
+                    <IconSelect
+                      selected={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Submit Button */}
           <Button

@@ -3,6 +3,7 @@
 import React from "react";
 import FoodAdd from "@/components/FoodAdd";
 import { Calendar } from "@/components/ui/calendar";
+import SmallFoodCard from "@/components/SmallFoodCard";
 
 const Page = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -27,6 +28,18 @@ const Page = () => {
             className="rounded-md border shadow"
           />
         </div>
+        <div>
+          <SmallFoodCard
+            food={{
+              name: "Marhapörkölt",
+              description: "Finom magyar pörkölt",
+              category: "SOUP",
+              image: "https://ik.imagekit.io/jsmasteryEcsedi",
+              type: "soup",
+              allergens: ["gluten", "lactose", "nut"],
+            }}
+          />
+        </div>
       </div>
       <FoodAdd
         date={date}
@@ -34,7 +47,7 @@ const Page = () => {
           name: "Marhapörkölt",
           description: "Finom magyar pörkölt",
           category: "SOUP",
-          image: "https://example.com/image.jpg",
+          image: "",
           allergens: ["gluten", "lactose", "nut"],
         }}
       />

@@ -25,4 +25,5 @@ export const foodSchema = z.object({
   image: z.string().optional(),
   allergens: z.array(z.string()).optional(),
   price: z.number().optional(),
+  type: z.string().min(1, "Válassz egy icont!"),
 });

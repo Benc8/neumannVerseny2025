@@ -2,7 +2,7 @@
 
 import { db } from "@/database/drizzle";
 import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { eq, ilike, or, sql } from "drizzle-orm";
 import config from "@/lib/config";
 
 interface foodSchema {
@@ -12,6 +12,7 @@ interface foodSchema {
   image: string;
   allergens: string[];
   price: number;
+  type: string;
 }
 
 // Define types based on your database schema
@@ -34,6 +35,37 @@ interface ServerSideProps {
     dailyMenu: TransformedDailyMenu[];
     selectedDate: string;
   };
+}
+
+export async function getFirst8Foods(): Promise<Food[]> {
+  const result = await db.select().from(foods).limit(8).execute();
+
+  return result;
+}
+
+export async function searchFoods(searchTerm: string): Promise<Food[]> {
+  const pattern = `%${searchTerm}%`;
+
+  const result = await db
+    .select()
+    .from(foods)
+    .where(
+      or(
+        ilike(foods.fullName, pattern), // Case-insensitive search in name
+        ilike(foods.description, pattern), // Case-insensitive search in description
+      ),
+    )
+    .orderBy(
+      // Prioritize name matches over description matches
+      sql`CASE 
+        WHEN ${foods.fullName} ILIKE ${pattern} THEN 1 
+        ELSE 2 
+      END`.mapWith(Number), // Ensure the result is mapped to a number
+    )
+    .limit(10) // Optional limit
+    .execute();
+
+  return result;
 }
 
 export async function getServerSideProps(
@@ -76,7 +108,7 @@ export async function createFood(data: foodSchema, date: Date) {
         category: data.category,
         imageUrl: imageUrl,
         allergens: data.allergens,
-        type: data.category,
+        type: data.type,
         price: data.price,
       })
       .returning({ foodId: foods.id }) // Get the inserted food's ID

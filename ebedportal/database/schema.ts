@@ -30,7 +30,7 @@ export const foods = pgTable("foods", {
   id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   description: text("description"),
-  type: text("type").notNull().default("MAIN_COURSE"),
+  type: text("type").notNull().default("soup"),
   allergens: text("allergens").array(),
   price: integer("price"),
   imageUrl: text("image_url"),

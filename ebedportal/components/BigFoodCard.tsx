@@ -15,7 +15,31 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { foods } from "@/database/schema";
-import { Fish, Milk, MilkOff, Nut, Wheat, WheatOff } from "lucide-react";
+import {
+  Beef,
+  Beer,
+  Cake,
+  Candy,
+  Coffee,
+  Fish,
+  IceCream,
+  Milk,
+  MilkOff,
+  Nut,
+  Pizza,
+  Salad,
+  Soup,
+  Wheat,
+  WheatOff,
+} from "lucide-react";
+
+type Food = typeof foods.$inferSelect;
+
+interface CardProps {
+  key: string;
+  food: Food;
+  color?: string;
+}
 
 const allergens = [
   { value: "nut", label: "Mogyorófélék", icon: Nut },
@@ -26,13 +50,17 @@ const allergens = [
   { value: "lactose-free", label: "Laktózmentes", icon: MilkOff },
 ];
 
-type Food = typeof foods.$inferSelect;
-
-interface CardProps {
-  key: string;
-  food: Food;
-  color?: string;
-}
+const foodIcons = [
+  { value: "beef", label: "Hús", icon: Beef },
+  { value: "soup", label: "Leves", icon: Soup },
+  { value: "salad", label: "Saláta", icon: Salad },
+  { value: "pizza", label: "Pizza", icon: Pizza },
+  { value: "dessert", label: "Desszert", icon: Cake },
+  { value: "coffee", label: "Kávé", icon: Coffee },
+  { value: "drink", label: "Ital", icon: Beer },
+  { value: "snack", label: "Nasi", icon: Candy },
+  { value: "ice-cream", label: "Fagylalt", icon: IceCream },
+];
 
 const BigFoodCard = ({ food, color }: CardProps) => {
   const getAllergenData = (allergenValue: string) =>
@@ -79,11 +107,26 @@ const BigFoodCard = ({ food, color }: CardProps) => {
         </CardContent>
 
         <CardContent className="flex-1 flex flex-col items-center justify-center">
-          <img
-            src={food.imageUrl || "/sigma.png"}
-            alt={"sigma"}
-            className="w-full mt-6 max-w-xs rounded-lg shadow-lg"
-          />
+          {food.imageUrl !== "https://ik.imagekit.io/jsmasteryEcsedi" ? (
+            <img
+              src={food.imageUrl}
+              alt={food.fullName}
+              className="w-full h-full object-cover rounded-lg pt-2 h8"
+            />
+          ) : (
+            food.type &&
+            foodIcons.find((icon) => icon.value.toUpperCase() === food.type)
+              ?.icon &&
+            React.createElement(
+              foodIcons.find((icon) => icon.value.toUpperCase() === food.type)!
+                .icon,
+              {
+                className:
+                  "h-32 w-32 lg:w-[80%] lg:h-[80%] text-white w-full h-full object-cover rounded-lg",
+              },
+            )
+          )}
+
           {food.price && (
             <CardDescription className="secondary-text pt-1">
               {food.price.toString()} Ft
