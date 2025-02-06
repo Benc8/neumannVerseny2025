@@ -2,7 +2,7 @@
 
 import { db } from "@/database/drizzle";
 import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
-import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
 import { orders, orderItems } from "@/database/schema";
 import config from "@/lib/config";
 import { auth } from "@/auth";
@@ -315,3 +315,47 @@ export const getUserId = async () => {
   }
   return session.user.id;
 };
+
+export interface OrderSummary {
+  foodId: string;
+  foodName: string;
+  category: string;
+  totalQuantity: number;
+  totalRevenue: number;
+}
+
+export async function getOrderStatistics(
+  startDate?: Date,
+  endDate?: Date,
+): Promise<OrderSummary[]> {
+  try {
+    const dateFilter =
+      startDate && endDate
+        ? and(gte(orders.createdAt, startDate), lte(orders.createdAt, endDate))
+        : undefined;
+
+    const result = await db
+      .select({
+        foodId: foods.id,
+        foodName: foods.fullName,
+        category: foods.category,
+        totalQuantity: sql<number>`sum(${orderItems.quantity})`,
+        totalRevenue: sql<number>`sum(${orderItems.quantity} * ${orderItems.price})`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .innerJoin(foods, eq(orderItems.foodId, foods.id))
+      .where(dateFilter)
+      .groupBy(foods.id, foods.fullName, foods.category)
+      .execute();
+
+    return result.map((item) => ({
+      ...item,
+      totalQuantity: Number(item.totalQuantity),
+      totalRevenue: Number(item.totalRevenue),
+    }));
+  } catch (error) {
+    console.error("Error fetching order statistics:", error);
+    throw new Error("Failed to fetch order statistics");
+  }
+}
