@@ -13,7 +13,6 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { foods } from "@/database/schema";
 import {
   Beef,

@@ -16,7 +16,7 @@ import {
 
 type Food = typeof foods.$inferSelect;
 
-const BigFoodCard = ({ food }: { food: Food }) => (
+const SmallFoodCard = ({ food }: { food: Food }) => (
   <Card className="flex items-center justify-between p-2 h-16">
     <div className="flex-1 min-w-0">
       <h3 className="font-medium truncate">{food.fullName}</h3>
@@ -48,4 +48,4 @@ const BigFoodCard = ({ food }: { food: Food }) => (
   </Card>
 );
 
-export default BigFoodCard;
+export default SmallFoodCard;

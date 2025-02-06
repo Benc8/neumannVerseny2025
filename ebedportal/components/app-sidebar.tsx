@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, Plus } from "lucide-react";
+import { Home, Plus, Delete } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,11 @@ const items = [
     title: "Létrehozás",
     url: "/admin/create",
     icon: Plus,
+  },
+  {
+    title: "Eltávolítás",
+    url: "/admin/delete",
+    icon: Delete,
   },
 ];
 

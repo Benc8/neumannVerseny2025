@@ -54,3 +54,26 @@ export const dailyMenuFoods = pgTable("daily_menu_foods", {
     .notNull()
     .references(() => foods.id), // Reference to foods
 });
+
+export const orders = pgTable("orders", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id), // Reference to users
+  totalAmount: integer("total_amount").notNull(), // Total amount of the order
+  createdAt: timestamp("created_at").notNull().defaultNow(), // Timestamp when the order was created
+  updatedAt: timestamp("updated_at").notNull().defaultNow(), // Timestamp when the order was last updated
+});
+
+// New table: orderItems
+export const orderItems = pgTable("order_items", {
+  id: uuid("id").notNull().primaryKey().defaultRandom().unique(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id), // Reference to orders
+  foodId: uuid("food_id")
+    .notNull()
+    .references(() => foods.id), // Reference to foods
+  quantity: integer("quantity").notNull(), // Quantity of the food item
+  price: integer("price").notNull(), // Price of the food item at the time of ordering
+});

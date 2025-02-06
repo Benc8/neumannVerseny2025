@@ -2,7 +2,8 @@
 
 import { db } from "@/database/drizzle";
 import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
-import { eq, ilike, or, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
+import { orders, orderItems } from "@/database/schema";
 import config from "@/lib/config";
 
 interface foodSchema {
@@ -157,3 +158,141 @@ export async function createFood(data: foodSchema, date: Date) {
     console.error("Error creating food:", error);
   }
 }
+
+export async function addFoodToDailyMenu(foodId: string, date: Date | string) {
+  try {
+    const selectedDate =
+      typeof date === "string" ? date : date.toISOString().split("T")[0];
+
+    // Check if daily menu exists for the date
+    let dailyMenuEntry = await db
+      .select()
+      .from(dailyMenus)
+      .where(eq(dailyMenus.date, selectedDate))
+      .execute();
+
+    let dailyMenuId: string;
+
+    // Create new daily menu if none exists
+    if (dailyMenuEntry.length === 0) {
+      const [newDailyMenu] = await db
+        .insert(dailyMenus)
+        .values({ date: selectedDate })
+        .returning({ dailyMenuId: dailyMenus.id })
+        .execute();
+
+      if (!newDailyMenu?.dailyMenuId) {
+        throw new Error("Failed to create daily menu.");
+      }
+      dailyMenuId = newDailyMenu.dailyMenuId;
+    } else {
+      dailyMenuId = dailyMenuEntry[0].id;
+    }
+
+    // Check if the food already exists in the daily menu
+    const existingFoodEntry = await db
+      .select()
+      .from(dailyMenuFoods)
+      .where(
+        and(
+          eq(dailyMenuFoods.dailyMenuId, dailyMenuId),
+          eq(dailyMenuFoods.foodId, foodId),
+        ),
+      )
+      .execute();
+
+    if (existingFoodEntry.length > 0) {
+      console.log("Food already exists in the daily menu.");
+      return; // Exit the function if the food is already in the menu
+    }
+
+    // Add food to the daily menu
+    await db
+      .insert(dailyMenuFoods)
+      .values({
+        dailyMenuId: dailyMenuId,
+        foodId: foodId,
+      })
+      .execute();
+
+    console.log("Food successfully added to daily menu");
+  } catch (error) {
+    console.error("Error adding food to daily menu:", error);
+  }
+}
+
+export async function removeFoodFromDailyMenu(
+  foodId: string,
+  date: Date | string,
+) {
+  try {
+    const selectedDate =
+      typeof date === "string" ? date : date.toISOString().split("T")[0];
+
+    // Get the daily menu ID for the selected date
+    const dailyMenuEntry = await db
+      .select()
+      .from(dailyMenus)
+      .where(eq(dailyMenus.date, selectedDate))
+      .execute();
+
+    if (dailyMenuEntry.length === 0) {
+      console.log("No daily menu found for the specified date");
+      return;
+    }
+
+    const dailyMenuId = dailyMenuEntry[0].id;
+
+    // Delete the food association from the daily menu
+    await db
+      .delete(dailyMenuFoods)
+      .where(
+        and(
+          eq(dailyMenuFoods.dailyMenuId, dailyMenuId),
+          eq(dailyMenuFoods.foodId, foodId),
+        ),
+      )
+      .execute();
+
+    console.log("Food successfully removed from daily menu");
+  } catch (error) {
+    console.error("Error removing food from daily menu:", error);
+  }
+}
+
+export const createOrder = async (orderData: {
+  userId: string;
+  items: Array<{ foodId: string; quantity: number; price: number }>;
+  totalAmount: number;
+  date: string;
+}) => {
+  return db.transaction(async (tx) => {
+    // Create order with date
+    const [newOrder] = await tx
+      .insert(orders)
+      .values({
+        userId: orderData.userId,
+        totalAmount: orderData.totalAmount,
+        status: "PENDING",
+        createdAt: new Date(), // Explicitly set creation date
+        updatedAt: new Date(), // Explicitly set update date
+      })
+      .returning({ id: orders.id });
+
+    if (!newOrder?.id) {
+      throw new Error("Failed to create order");
+    }
+
+    // Create order items with proper type casting
+    await tx.insert(orderItems).values(
+      orderData.items.map((item) => ({
+        orderId: newOrder.id,
+        foodId: item.foodId,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    );
+
+    return newOrder.id;
+  });
+};
