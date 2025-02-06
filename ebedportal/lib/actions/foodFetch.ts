@@ -5,6 +5,8 @@ import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { orders, orderItems } from "@/database/schema";
 import config from "@/lib/config";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 interface foodSchema {
   name: string;
@@ -266,16 +268,17 @@ export const createOrder = async (orderData: {
   totalAmount: number;
   date: string;
 }) => {
-  return db.transaction(async (tx) => {
-    // Create order with date
-    const [newOrder] = await tx
+  console.log("Creating order:", orderData);
+  try {
+    // Create order
+    const [newOrder] = await db
       .insert(orders)
       .values({
         userId: orderData.userId,
         totalAmount: orderData.totalAmount,
         status: "PENDING",
-        createdAt: new Date(), // Explicitly set creation date
-        updatedAt: new Date(), // Explicitly set update date
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       .returning({ id: orders.id });
 
@@ -283,16 +286,32 @@ export const createOrder = async (orderData: {
       throw new Error("Failed to create order");
     }
 
-    // Create order items with proper type casting
-    await tx.insert(orderItems).values(
-      orderData.items.map((item) => ({
-        orderId: newOrder.id,
-        foodId: item.foodId,
-        quantity: item.quantity,
-        price: item.price,
-      })),
+    // Create order items
+    await Promise.all(
+      orderData.items.map((item) =>
+        db
+          .insert(orderItems)
+          .values({
+            orderId: newOrder.id,
+            foodId: item.foodId,
+            quantity: item.quantity,
+            price: item.price,
+          })
+          .execute(),
+      ),
     );
 
     return newOrder.id;
-  });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error; // Re-throw the error for handling in the calling function
+  }
+};
+
+export const getUserId = async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login"); // Redirect to login page if not authenticated
+  }
+  return session.user.id;
 };

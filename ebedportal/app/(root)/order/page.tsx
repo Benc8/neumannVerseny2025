@@ -3,159 +3,257 @@
 import React, { useState, useEffect } from "react";
 import BigFoodCard from "@/components/BigFoodCard";
 import { foods } from "@/database/schema";
-import { getServerSideProps } from "@/lib/actions/foodFetch";
+import { getServerSideProps, getUserId } from "@/lib/actions/foodFetch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { format, addDays } from "date-fns";
-import { useToast } from "@/components/ui/use-toast";
-import { createOrder } from "@/lib/actions/orderActions"; // Assume this is created
+import { useToast } from "@/hooks/use-toast";
+import { createOrder } from "@/lib/actions/foodFetch";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { router } from "next/client";
 
 type Food = typeof foods.$inferSelect;
 
 type TransformedDailyMenu = {
-    foods: Food[];
+  foods: Food[];
 };
 
 const OrderDailyMenu = () => {
-    const { toast } = useToast();
-    const [date, setDate] = useState<Date>(new Date());
-    const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [quantities, setQuantities] = useState<Record<string, number>>({});
-    const [isOrdering, setIsOrdering] = useState(false);
+  const { toast } = useToast();
+  const [date, setDate] = useState<Date>(new Date());
+  const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>(
+    [],
+  );
+  const [loading, setLoading] = useState(false);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [isOrdering, setIsOrdering] = useState(false);
 
-    // ... keep existing useEffect and date handling ...
+  useEffect(() => {
+    const fetchDailyMenu = async () => {
+      try {
+        setLoading(true);
+        const formattedDate = format(date, "yyyy-MM-dd");
+        const response = await getServerSideProps(formattedDate);
+        const data = response.props;
 
-    const handleQuantityChange = (foodId: string, delta: number) => {
-        setQuantities(prev => ({
-            ...prev,
-            [foodId]: Math.max(0, (prev[foodId] || 0) + delta)
+        const transformedData = data.dailyMenu.map((menu) => ({
+          ...menu,
+          foods: [
+            {
+              ...menu.foods,
+              type: menu.foods.type.toUpperCase(),
+              category: menu.foods.category || menu.foods.type.toUpperCase(),
+            },
+          ],
         }));
+
+        setDailyMenuData(transformedData);
+        setQuantities({}); // Reset quantities when date changes
+      } catch (error) {
+        console.error("Failed to fetch daily menu:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleSubmitOrder = async () => {
-        try {
-            setIsOrdering(true);
-            const selectedItems = Object.entries(quantities)
-                .filter(([_, qty]) => qty > 0)
-                .map(([foodId, qty]) => {
-                    const food = allFoods.find(f => f.id === foodId);
-                    return {
-                        foodId,
-                        quantity: qty,
-                        price: food?.price || 0
-                    };
-                });
+    fetchDailyMenu();
+  }, [date]);
 
-            if (selectedItems.length === 0) {
-                toast({
-                    title: "Hiba",
-                    description: "Válassz ki ételt a rendeléshez!",
-                    variant: "destructive"
-                });
-                return;
-            }
+  const changeDate = (days: number) => {
+    setDate((prevDate) => addDays(prevDate, days));
+  };
 
-            const total = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const handleQuantityChange = (foodId: string, delta: number) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [foodId]: Math.max(0, (prev[foodId] || 0) + delta),
+    }));
+  };
 
-            // Assume currentUser is available from your auth system
-            const orderData = {
-                userId: "current_user_id", // Replace with actual user ID
-                items: selectedItems,
-                totalAmount: total,
-                date: format(date, "yyyy-MM-dd")
-            };
+  const handleSubmitOrder = async () => {
+    try {
+      setIsOrdering(true);
 
-            await createOrder(orderData);
+      // Get authenticated user ID
+      const userId = await getUserId();
+      if (!userId) {
+        router.push("/login"); // Redirect to login if not authenticated
+        return;
+      }
 
-            toast({
-                title: "Rendelés sikeres!",
-                description: "A rendelésedet rögzítettük!",
-            });
-            setQuantities({}); // Reset quantities
+      const selectedItems = Object.entries(quantities)
+        .filter(([_, qty]) => qty > 0)
+        .map(([foodId, qty]) => {
+          const food = allFoods.find((f) => f.id === foodId);
+          return {
+            foodId,
+            quantity: qty,
+            price: food?.price || 0,
+          };
+        });
 
-        } catch (error) {
-            toast({
-                title: "Hiba",
-                description: "A rendelés sikertelen volt",
-                variant: "destructive"
-            });
-        } finally {
-            setIsOrdering(false);
-        }
-    };
+      if (selectedItems.length === 0) {
+        toast({
+          title: "Hiba",
+          description: "Válassz ki ételt a rendeléshez!",
+          variant: "destructive",
+        });
+        return;
+      }
 
-    // Modified render section for food cards
-    const renderFoodCard = (food: Food, color: string) => (
-        <div className="relative">
-            <BigFoodCard key={food.id} food={food} color={color} />
-            <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-background/90 p-2 rounded-lg">
-                <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleQuantityChange(food.id, -1)}
-                    disabled={!quantities[food.id]}
-                >
-                    -
-                </Button>
-                <span className="w-8 text-center">{quantities[food.id] || 0}</span>
-                <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleQuantityChange(food.id, 1)}
-                >
-                    +
-                </Button>
+      const total = selectedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0,
+      );
+
+      await createOrder({
+        userId, // Use the actual user ID
+        items: selectedItems,
+        totalAmount: total,
+        date: format(date, "yyyy-MM-dd"),
+      });
+
+      toast({
+        title: "Rendelés sikeres!",
+        description: "A rendelésedet rögzítettük!",
+      });
+      setQuantities({});
+    } catch (error) {
+      toast({
+        title: "Hiba",
+        description: "A rendelés sikertelen volt",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOrdering(false);
+    }
+  };
+
+  const allFoods = dailyMenuData.flatMap((menu) => menu.foods);
+  const soups = allFoods.filter((food) => food.category === "SOUP");
+  const mainCourses = allFoods.filter(
+    (food) => food.category === "MAIN_COURSE",
+  );
+
+  const showEmptyState = !loading && allFoods.length === 0;
+
+  const renderFoodCard = (food: Food, color: string) => (
+    <div className="flex flex-col gap-4">
+      <BigFoodCard food={food} color={color} />
+      <div className="flex items-center justify-center gap-3 bg-muted/50 p-2 rounded-lg">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuantityChange(food.id, -1)}
+          disabled={!quantities[food.id]}
+          className="h-8 w-8 p-0"
+        >
+          -
+        </Button>
+        <span className="w-8 text-center text-lg font-medium">
+          {quantities[food.id] || 0}
+        </span>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => handleQuantityChange(food.id, 1)}
+          className="h-8 w-8 p-0"
+        >
+          +
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="flex items-center justify-center space-x-4 mb-4">
+        <Button onClick={() => changeDate(-1)}>Előző</Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="flex flex-col h-auto">
+              {format(date, "eeee")}
+              <span className="text-sm text-gray-500">
+                {format(date, "yyyy-MM-dd")}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="portalColors">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={(selectedDate) => selectedDate && setDate(selectedDate)}
+            />
+          </PopoverContent>
+        </Popover>
+        <Button onClick={() => changeDate(1)}>Következő</Button>
+      </div>
+
+      {showEmptyState ? (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-semibold text-gray-600 mb-2">
+            Nem találtunk ma menüt 😞
+          </h2>
+          <p className="text-gray-500">Kérjük próbálkozz másik dátummal!</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="lg:col-span-1 xl:col-span-1">
+            <h2 className="text-4xl text-center font-bebas mb-4">Levesek</h2>
+            <div className="space-y-6">
+              {loading
+                ? Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                  ))
+                : soups.map((soup) => renderFoodCard(soup, "orange"))}
             </div>
+          </div>
+
+          <div className="lg:col-span-1 xl:col-span-2">
+            <h2 className="text-4xl text-center font-bebas mb-4">Főételek</h2>
+            <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
+              {loading
+                ? Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                  ))
+                : mainCourses.map((mainCourse) =>
+                    renderFoodCard(mainCourse, "green"),
+                  )}
+            </div>
+          </div>
         </div>
-    );
+      )}
 
-    return (
-        <div>
-            {/* Keep existing date picker code */}
-
-            {showEmptyState ? (
-                    /* Keep empty state */
-                ) : (
-                <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-                    {/* Soup Section */}
-                    <div className="lg:col-span-1 xl:col-span-1">
-                        <h2 className="text-4xl text-center font-bebas mb-4">Levesek</h2>
-                        <div className="space-y-6">
-                            {loading ? /* skeletons */ : soups.map(soup => renderFoodCard(soup, "orange"))}
-                        </div>
-                    </div>
-
-                    {/* Main Courses Section */}
-                    <div className="lg:col-span-1 xl:col-span-2">
-                        <h2 className="text-4xl text-center font-bebas mb-4">Főételek</h2>
-                        <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
-                            {loading ? /* skeletons */ : mainCourses.map(mainCourse => renderFoodCard(mainCourse, "green"))}
-                        </div>
-                    </div>
-                </div>
-                )}
-
-            {/* Order Button */}
-            {!showEmptyState && (
-                <div className="mt-8 flex justify-center">
-                    <Button
-                        size="lg"
-                        onClick={handleSubmitOrder}
-                        disabled={isOrdering || Object.values(quantities).every(q => q === 0)}
-                    >
-                        {isOrdering ? "Feldolgozás..." : "Rendelés leadása"}
-                    </Button>
-                </div>
+      {!showEmptyState && (
+        <div className="mt-8 flex justify-center">
+          <Button
+            size="lg"
+            onClick={handleSubmitOrder}
+            disabled={
+              isOrdering || Object.values(quantities).every((q) => q === 0)
+            }
+            className="w-full max-w-md"
+          >
+            {isOrdering ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin">⏳</span>
+                Feldolgozás...
+              </span>
+            ) : (
+              "Rendelés leadása"
             )}
+          </Button>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default OrderDailyMenu;
