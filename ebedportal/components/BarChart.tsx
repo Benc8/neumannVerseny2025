@@ -38,17 +38,17 @@ export function BarChart({
   bars,
   yAxisFormatter,
 }: BarChartProps) {
-  // Define zinc color variants for dark/light themes
+  // Tailwind colors for bars (light and dark theme compatible)
   const colors = [
-    "var(--zinc-600)", // Light theme primary
-    "var(--zinc-400)", // Light theme secondary
-    "var(--zinc-200)", // Light theme tertiary
-    "var(--zinc-800)", // Dark theme primary
-    "var(--zinc-500)", // Dark theme secondary
+    "hsl(var(--zinc-600))", // Light theme primary
+    "hsl(var(--zinc-400))", // Light theme secondary
+    "hsl(var(--zinc-200))", // Light theme tertiary
+    "hsl(var(--zinc-800))", // Dark theme primary
+    "hsl(var(--zinc-500))", // Dark theme secondary
   ];
 
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full portalColors", className)}>
       {title && (
         <CardHeader>
           <CardTitle className="text-lg">{title}</CardTitle>
@@ -82,7 +82,7 @@ export function BarChart({
                   }
                 />
                 <Tooltip
-                  cursor={{ fill: "hsl(var(--secondary))" }}
+                  cursor={{ fill: "transparent" }} // Transparent hover background
                   contentStyle={{
                     backgroundColor: "hsl(var(--background))",
                     borderColor: "hsl(var(--border))",
@@ -108,6 +108,7 @@ export function BarChart({
                     name={bar.name}
                     fill={colors[index % colors.length]}
                     radius={[4, 4, 0, 0]}
+                    className="transition-opacity hover:opacity-80" // Smooth hover effect
                   />
                 ))}
               </RechartsBarChart>

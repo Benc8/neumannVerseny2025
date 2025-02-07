@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import SmallFoodCard from "@/components/SmallFoodCard";
+import BigFoodCard from "@/components/BigFoodCard";
 import { foods } from "@/database/schema";
-import { getServerSideProps } from "@/lib/actions/foodFetch";
+import {
+  getServerSideProps,
+  getOrderStatistics,
+} from "@/lib/actions/foodFetch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -13,66 +16,65 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format, addDays } from "date-fns";
-import { Trash2 } from "lucide-react";
-import { removeFoodFromDailyMenu } from "@/lib/actions/foodFetch";
 
 type Food = typeof foods.$inferSelect;
+type OrderSummary = Awaited<ReturnType<typeof getOrderStatistics>>[number];
 
 type TransformedDailyMenu = {
   foods: Food[];
 };
 
-const Page = () => {
+const OrderShow = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [dailyMenuData, setDailyMenuData] = useState<TransformedDailyMenu[]>(
     [],
   );
+  const [orderStats, setOrderStats] = useState<OrderSummary[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchDailyMenu = async () => {
-    try {
-      setLoading(true);
-      const formattedDate = format(date, "yyyy-MM-dd");
-      const response = await getServerSideProps(formattedDate);
-      const data = response.props;
-
-      const transformedData = data.dailyMenu.map((menu) => ({
-        ...menu,
-        foods: [
-          {
-            ...menu.foods,
-            type: menu.foods.type.toUpperCase(),
-            category: menu.foods.category || menu.foods.type.toUpperCase(),
-          },
-        ],
-      }));
-
-      setDailyMenuData(transformedData);
-    } catch (error) {
-      console.error("Failed to fetch daily menu:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchDailyMenu();
-  }, [date]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const formattedDate = format(date, "yyyy-MM-dd");
 
-  const handleDelete = async (foodId: string) => {
-    const formattedDate = format(date, "yyyy-MM-dd");
-    try {
-      console.log("Deleting food:", foodId);
-      console.log("Date:", formattedDate);
-      await removeFoodFromDailyMenu(foodId, formattedDate);
-      window.location.reload();
-    } catch (error) {
-      console.error("Failed to delete food:", error);
-    }
-  };
+        // Fetch both menu and order statistics
+        const [menuResponse, stats] = await Promise.all([
+          getServerSideProps(formattedDate),
+          getOrderStatistics(date),
+        ]);
+
+        const transformedData = menuResponse.props.dailyMenu.map((menu) => ({
+          ...menu,
+          foods: [
+            {
+              ...menu.foods,
+              type: menu.foods.type.toUpperCase(),
+              category: menu.foods.category || menu.foods.type.toUpperCase(),
+            },
+          ],
+        }));
+
+        setDailyMenuData(transformedData);
+        setOrderStats(stats);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [date]);
 
   const changeDate = (days: number) => {
     setDate((prevDate) => addDays(prevDate, days));
+  };
+
+  const getQuantityForFood = (foodId: string) => {
+    return (
+      orderStats.find((stat) => stat.foodId === foodId)?.totalQuantity || 0
+    );
   };
 
   const allFoods = dailyMenuData.flatMap((menu) => menu.foods);
@@ -85,7 +87,7 @@ const Page = () => {
 
   return (
     <div>
-      {/* Date Selection */}
+      {/* Date Selector */}
       <div className="flex items-center justify-center space-x-4 mb-4">
         <Button onClick={() => changeDate(-1)}>Előző</Button>
         <Popover>
@@ -108,7 +110,7 @@ const Page = () => {
         <Button onClick={() => changeDate(1)}>Következő</Button>
       </div>
 
-      {/* Content */}
+      {/* Empty State */}
       {showEmptyState ? (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-600 mb-2">
@@ -117,56 +119,40 @@ const Page = () => {
           <p className="text-gray-500">Kérjük próbálkozz másik dátummal!</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           {/* Soups Section */}
-          <div>
+          <div className="lg:col-span-1 xl:col-span-1">
             <h2 className="text-4xl text-center font-bebas mb-4">Levesek</h2>
-            <div className="space-y-2">
+            <div className="space-y-6">
               {loading
                 ? Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-16 w-full rounded-lg" />
+                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
                   ))
                 : soups.map((soup) => (
-                    <div
-                      key={soup.id}
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <SmallFoodCard food={soup} />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(soup.id)}
-                        className="text-red-500 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div key={soup.id} className="relative">
+                      <BigFoodCard food={soup} color="orange" />
+                      <div className="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded-md text-sm">
+                        Rendelt mennyiség: {getQuantityForFood(soup.id)}
+                      </div>
                     </div>
                   ))}
             </div>
           </div>
 
           {/* Main Courses Section */}
-          <div>
+          <div className="lg:col-span-1 xl:col-span-2">
             <h2 className="text-4xl text-center font-bebas mb-4">Főételek</h2>
-            <div className="space-y-2">
+            <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
               {loading
                 ? Array.from({ length: 6 }).map((_, index) => (
-                    <Skeleton key={index} className="h-16 w-full rounded-lg" />
+                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
                   ))
                 : mainCourses.map((mainCourse) => (
-                    <div
-                      key={mainCourse.id}
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <SmallFoodCard food={mainCourse} />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(mainCourse.id)}
-                        className="text-red-500 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div key={mainCourse.id} className="relative">
+                      <BigFoodCard food={mainCourse} color="green" />
+                      <div className="absolute bottom-2 right-2 bg-background/80 px-2 py-1 rounded-md text-sm">
+                        Rendelt mennyiség: {getQuantityForFood(mainCourse.id)}
+                      </div>
                     </div>
                   ))}
             </div>
@@ -177,4 +163,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default OrderShow;

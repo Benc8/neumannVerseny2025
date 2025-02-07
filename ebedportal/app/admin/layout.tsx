@@ -22,6 +22,7 @@ import {
   Wheat,
   WheatOff,
 } from "lucide-react";
+import { getUserRole } from "@/lib/actions/foodFetch";
 
 export default async function Layout({
   children,
@@ -31,6 +32,12 @@ export default async function Layout({
   const session = await auth();
 
   if (!session) {
+    redirect("/");
+  }
+
+  const role = await getUserRole(session.user?.id!);
+
+  if (role !== "ADMIN") {
     redirect("/");
   }
 

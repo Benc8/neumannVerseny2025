@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database/drizzle";
-import { dailyMenus, dailyMenuFoods, foods } from "@/database/schema";
+import { dailyMenus, dailyMenuFoods, foods, users } from "@/database/schema";
 import { and, eq, gte, ilike, lte, or, sql } from "drizzle-orm";
 import { orders, orderItems } from "@/database/schema";
 import config from "@/lib/config";
@@ -18,7 +18,6 @@ interface foodSchema {
   type: string;
 }
 
-// Define types based on your database schema
 type DailyMenu = typeof dailyMenus.$inferSelect;
 type Food = typeof foods.$inferSelect;
 
@@ -59,13 +58,12 @@ export async function searchFoods(searchTerm: string): Promise<Food[]> {
       ),
     )
     .orderBy(
-      // Prioritize name matches over description matches
       sql`CASE 
         WHEN ${foods.fullName} ILIKE ${pattern} THEN 1 
         ELSE 2 
-      END`.mapWith(Number), // Ensure the result is mapped to a number
+      END`.mapWith(Number),
     )
-    .limit(10) // Optional limit
+    .limit(10)
     .execute();
 
   return result;
@@ -324,15 +322,33 @@ export interface OrderSummary {
   totalRevenue: number;
 }
 
-export async function getOrderStatistics(
-  startDate?: Date,
-  endDate?: Date,
-): Promise<OrderSummary[]> {
+export async function getUserRole(userId: string): Promise<string> {
   try {
-    const dateFilter =
-      startDate && endDate
-        ? and(gte(orders.createdAt, startDate), lte(orders.createdAt, endDate))
-        : undefined;
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .execute();
+    return user[0].role;
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    throw new Error("Failed to fetch user role");
+  }
+}
+
+export async function getOrderStatistics(date?: Date): Promise<OrderSummary[]> {
+  try {
+    let dateFilter;
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      dateFilter = and(
+        gte(orders.createdAt, startOfDay),
+        lte(orders.createdAt, endOfDay),
+      );
+    }
 
     const result = await db
       .select({
@@ -346,7 +362,7 @@ export async function getOrderStatistics(
       .innerJoin(orders, eq(orderItems.orderId, orders.id))
       .innerJoin(foods, eq(orderItems.foodId, foods.id))
       .where(dateFilter)
-      .groupBy(foods.id, foods.fullName, foods.category)
+      .groupBy(foods.id, foods.fullName)
       .execute();
 
     return result.map((item) => ({
@@ -357,5 +373,57 @@ export async function getOrderStatistics(
   } catch (error) {
     console.error("Error fetching order statistics:", error);
     throw new Error("Failed to fetch order statistics");
+  }
+}
+
+export interface OrderedFood {
+  foodId: string;
+  foodName: string;
+  quantity: number;
+  price: number;
+  totalAmount: number;
+}
+
+export async function getUserOrderedFoodForDay(
+  userId: string,
+  date: Date,
+): Promise<OrderedFood[]> {
+  try {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const result = await db
+      .select({
+        foodId: foods.id,
+        foodName: foods.fullName,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        totalAmount: sql<number>`${orderItems.quantity} * ${orderItems.price}`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .innerJoin(foods, eq(orderItems.foodId, foods.id))
+      .where(
+        and(
+          eq(orders.userId, userId), // Filter by user ID
+          gte(orders.createdAt, startOfDay), // Filter by start of day
+          lte(orders.createdAt, endOfDay), // Filter by end of day
+        ),
+      )
+      .execute();
+
+    return result.map((item) => ({
+      foodId: item.foodId,
+      foodName: item.foodName,
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+      totalAmount: Number(item.totalAmount),
+    }));
+  } catch (error) {
+    console.error("Error fetching user's ordered food for the day:", error);
+    throw new Error("Failed to fetch user's ordered food for the day");
   }
 }

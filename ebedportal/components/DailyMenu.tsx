@@ -73,7 +73,7 @@ const DailyMenu = () => {
   return (
     <div>
       <div className="flex items-center justify-center space-x-4 mb-4">
-        <Button onClick={() => changeDate(-1)}>Previous</Button>
+        <Button onClick={() => changeDate(-1)}>Előző</Button>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="flex flex-col h-auto">
@@ -91,7 +91,7 @@ const DailyMenu = () => {
             />
           </PopoverContent>
         </Popover>
-        <Button onClick={() => changeDate(1)}>Next</Button>
+        <Button onClick={() => changeDate(1)}>Következő</Button>
       </div>
 
       {showEmptyState ? (

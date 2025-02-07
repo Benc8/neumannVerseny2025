@@ -28,9 +28,6 @@
     dark:from-orange-800/50 dark:via-orange-900/50 dark:to-black/50
     shadow-lg hover:shadow-xl rounded-lg;
   }
-  FormItem {
-    @apply text-red-500;
-  }
 }
 
 @layer base {

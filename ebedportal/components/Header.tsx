@@ -9,38 +9,47 @@ import logo from "../public/logo.png";
 const Header = async () => {
   const session = await auth();
   return (
-    <header
-      className={
-        "flex fixed top-1 justify-between w-full p-5 text-zinc-900 dark:text-zinc-100"
-      }
-    >
+    <header className="flex fixed top-1 justify-between w-full p-5 text-zinc-900 dark:text-zinc-100">
+      {/* Logo */}
       <div>
-        <Link href={"/"}>
+        <Link href="/" className="cursor-pointer">
           <Image
             src={logo}
-            alt={"logo"}
+            alt="logo"
             width={60}
             height={60}
-            className={"rounded-xl"}
+            className="rounded-xl cursor-pointer"
           />
         </Link>
       </div>
-      <div className={"ml-2 pl-[5rem]"}>
-        <h1 className={"text-4xl font-semibold font-bebas text-center"}>
+
+      {/* Title */}
+      <div className="ml-2 pl-[2rem]">
+        <h1 className="text-4xl font-semibold font-bebas text-center">
           EbédPortál
         </h1>
       </div>
+
+      {/* User Section */}
       <div>
         {!session ? (
-          <Link href={"/sign-in"}>Bejelentkezés</Link>
+          <Link
+            href="/sign-in"
+            className="cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+          >
+            Bejelentkezés
+          </Link>
         ) : (
-          <div className={"flex items-center gap-4"}>
-            <Link href={"/order"}>
-              <h1>Rendelés</h1>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/order"
+              className="cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+            >
+              Rendelés
             </Link>
-            <Link href={"/my-profile"}>
+            <Link href="/my-profile" className="cursor-pointer">
               <Avatar>
-                <AvatarFallback className={"text-white bg-zinc-500"}>
+                <AvatarFallback className="text-white bg-zinc-500 cursor-pointer">
                   {getInitials(session?.user?.email || "EE")}
                 </AvatarFallback>
               </Avatar>
@@ -51,4 +60,5 @@ const Header = async () => {
     </header>
   );
 };
+
 export default Header;
