@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, Plus, Delete } from "lucide-react";
+import { Home, Plus, Delete, ArrowLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -35,7 +35,7 @@ export function AppSidebar() {
   const pathname = usePathname(); // Use usePathname instead of useRouter for Next.js App Router
 
   return (
-    <Sidebar className="bg-white dark:bg-gray-900 shadow-lg w-64 h-screen flex flex-col justify-center">
+    <Sidebar className="bg-white dark:bg-gray-900 shadow-lg w-64 h-screen flex flex-col justify-between">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -65,6 +65,17 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* Bottom Link */}
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <a
+          href="/"
+          className="flex items-center gap-3 p-3 text-xl font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+        >
+          <ArrowLeft className="w-6 h-6" />
+          <span>Vissza a főoldalra</span>
+        </a>
+      </div>
     </Sidebar>
   );
 }
