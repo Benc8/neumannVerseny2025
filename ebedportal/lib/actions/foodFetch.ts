@@ -7,6 +7,7 @@ import { orders, orderItems } from "@/database/schema";
 import config from "@/lib/config";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { date } from "drizzle-orm/pg-core";
 
 interface foodSchema {
   name: string;
@@ -264,9 +265,8 @@ export const createOrder = async (orderData: {
   userId: string;
   items: Array<{ foodId: string; quantity: number; price: number }>;
   totalAmount: number;
-  date: string;
+  date: Date;
 }) => {
-  console.log("Creating order:", orderData);
   try {
     // Create order
     const [newOrder] = await db
@@ -275,8 +275,8 @@ export const createOrder = async (orderData: {
         userId: orderData.userId,
         totalAmount: orderData.totalAmount,
         status: "PENDING",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: orderData.date,
+        updatedAt: orderData.date,
       })
       .returning({ id: orders.id });
 

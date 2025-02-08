@@ -117,7 +117,7 @@ const OrderDailyMenu = () => {
         userId, // Use the actual user ID
         items: selectedItems,
         totalAmount: total,
-        date: format(date, "yyyy-MM-dd"),
+        date: date,
       });
 
       toast({
