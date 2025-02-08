@@ -57,6 +57,7 @@ const FoodAdd: React.FC<FoodAddProps> = ({ date, initialValues }) => {
         title: "Étel sikeresen hozzáadva",
         description: "Az étel sikeresen hozzáadva a menühöz",
       });
+      window.location.reload();
     } catch (error) {
       toast({
         title: "Hiba az étel hozzáadása során",

@@ -11,7 +11,7 @@ const Header = async () => {
   return (
     <header className="flex fixed top-1 justify-between w-full p-5 text-zinc-900 dark:text-zinc-100">
       {/* Logo */}
-      <div>
+      <div className={"flex items-center gap-4"}>
         <Link href="/" className="cursor-pointer">
           <Image
             src={logo}
@@ -21,11 +21,7 @@ const Header = async () => {
             className="rounded-xl cursor-pointer"
           />
         </Link>
-      </div>
-
-      {/* Title */}
-      <div className="ml-2 pl-[2rem]">
-        <h1 className="text-4xl font-semibold font-bebas text-center">
+        <h1 className="text-4xl font-semibold font-bebas text-center hidden lg:block">
           EbédPortál
         </h1>
       </div>

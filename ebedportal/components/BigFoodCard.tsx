@@ -44,7 +44,7 @@ const allergens = [
   { value: "nut", label: "Mogyorófélék", icon: Nut },
   { value: "fish", label: "Garnélarák", icon: Fish },
   { value: "gluten", label: "Glutén", icon: Wheat },
-  { value: "lactose", label: "Tej", icon: Milk },
+  { value: "lactose", label: "Laktóz", icon: Milk },
   { value: "gluten-free", label: "Gluténmentes", icon: WheatOff },
   { value: "lactose-free", label: "Laktózmentes", icon: MilkOff },
 ];
@@ -107,11 +107,13 @@ const BigFoodCard = ({ food, color }: CardProps) => {
 
         <CardContent className="flex-1 flex flex-col items-center justify-center">
           {food.imageUrl !== "https://ik.imagekit.io/jsmasteryEcsedi" ? (
-            <img
-              src={food.imageUrl}
-              alt={food.fullName}
-              className="w-full h-full object-cover rounded-lg pt-2 h8"
-            />
+            <div className={"pt-3"}>
+              <img
+                src={food.imageUrl}
+                alt={food.fullName}
+                className="w-full h-full object-cover rounded-lg h8"
+              />
+            </div>
           ) : (
             food.type &&
             foodIcons.find((icon) => icon.value.toUpperCase() === food.type)

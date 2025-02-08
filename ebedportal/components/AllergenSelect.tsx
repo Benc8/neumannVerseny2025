@@ -47,7 +47,7 @@ const allergens = [
   },
   {
     value: "lactose",
-    label: "Tej",
+    label: "Laktóz",
     icon: Milk,
   },
   {
