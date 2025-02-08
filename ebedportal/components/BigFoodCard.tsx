@@ -31,6 +31,7 @@ import {
   Wheat,
   WheatOff,
 } from "lucide-react";
+import config from "@/lib/config";
 
 type Food = typeof foods.$inferSelect;
 
@@ -106,7 +107,7 @@ const BigFoodCard = ({ food, color }: CardProps) => {
         </CardContent>
 
         <CardContent className="flex-1 flex flex-col items-center justify-center">
-          {food.imageUrl !== "https://ik.imagekit.io/jsmasteryEcsedi" ? (
+          {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
             <div className={"pt-3"}>
               <img
                 src={food.imageUrl}

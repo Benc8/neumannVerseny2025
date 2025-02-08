@@ -13,6 +13,7 @@ import {
   Candy,
   IceCream,
 } from "lucide-react";
+import config from "@/lib/config";
 
 type Food = typeof foods.$inferSelect;
 
@@ -24,7 +25,7 @@ const SmallFoodCard = ({ food }: { food: Food }) => (
         {food.description}
       </p>
     </div>
-    {food.imageUrl !== "https://ik.imagekit.io/jsmasteryEcsedi" ? (
+    {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
       <Image
         src={food.imageUrl!}
         alt={food.fullName}
