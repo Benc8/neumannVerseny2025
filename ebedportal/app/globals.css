@@ -18,6 +18,9 @@
   .secondary-text {
     @apply text-zinc-800 dark:text-zinc-300;
   }
+  .bg-primary {
+    @apply dark:bg-zinc-400 bg-zinc-700;
+  }
   .card-bg-green {
     @apply bg-gradient-to-br from-emerald-100/50 via-emerald-200/50 to-emerald-300/50
     dark:from-emerald-800/50 dark:via-emerald-900/50 dark:to-black/50
@@ -87,6 +90,9 @@
   }
 
 }
+
+
+
 
 
 

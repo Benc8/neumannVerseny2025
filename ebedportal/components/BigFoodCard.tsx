@@ -71,7 +71,7 @@ const BigFoodCard = ({ food, color }: CardProps) => {
       <Card
         className={cn(
           color === "green" ? "card-bg-green" : "card-bg-orange",
-          "flex flex-col sm:flex-row items-center md:items-start gap-6",
+          "flex flex-col sm:flex-row items-center md:items-start gap-6 lg:h-80",
         )}
       >
         <CardContent className="flex-1 text-center md:text-left">
@@ -112,7 +112,7 @@ const BigFoodCard = ({ food, color }: CardProps) => {
               <img
                 src={food.imageUrl}
                 alt={food.fullName}
-                className="w-full h-full object-cover rounded-lg h8"
+                className=" object-contain rounded-lg h8"
               />
             </div>
           ) : (

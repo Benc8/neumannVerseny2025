@@ -108,7 +108,7 @@ const DailyMenu = () => {
             <div className="space-y-6">
               {loading
                 ? Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                    <Skeleton key={index} className="h-80 w-full rounded-lg" />
                   ))
                 : soups.map((soup) => (
                     <BigFoodCard key={soup.id} food={soup} color="orange" />
@@ -121,7 +121,7 @@ const DailyMenu = () => {
             <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
               {loading
                 ? Array.from({ length: 6 }).map((_, index) => (
-                    <Skeleton key={index} className="h-24 w-full rounded-lg" />
+                    <Skeleton key={index} className="h-80 w-full rounded-lg" />
                   ))
                 : mainCourses.map((mainCourse) => (
                     <BigFoodCard
