@@ -13,6 +13,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format, addDays } from "date-fns";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type Food = typeof foods.$inferSelect;
 
@@ -71,12 +76,20 @@ const DailyMenu = () => {
   const showEmptyState = !loading && allFoods.length === 0;
 
   return (
-    <div>
+    <div className={"xl:pl-[7%] xl:pr-[7%]"}>
       <div className="flex items-center justify-center space-x-4 mb-4">
-        <Button onClick={() => changeDate(-1)}>Előző</Button>
+        <Button
+          className={"hidden sm:inline-block w-32"}
+          onClick={() => changeDate(-1)}
+        >
+          Előző
+        </Button>
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="flex flex-col h-auto">
+            <Button
+              variant="outline"
+              className="flex flex-col h-auto w-60 sm:w-40"
+            >
               {format(date, "eeee")}
               <span className="text-sm text-gray-500">
                 {format(date, "yyyy-MM-dd")}
@@ -91,7 +104,12 @@ const DailyMenu = () => {
             />
           </PopoverContent>
         </Popover>
-        <Button onClick={() => changeDate(1)}>Következő</Button>
+        <Button
+          className={"hidden sm:inline-block w-32"}
+          onClick={() => changeDate(1)}
+        >
+          Következő
+        </Button>
       </div>
 
       {showEmptyState ? (
@@ -103,12 +121,15 @@ const DailyMenu = () => {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-          <div className="lg:col-span-1 xl:col-span-1">
+          <div className="lg:col-span-1 xl:col-span-1 m-0 p-0">
             <h2 className="text-4xl text-center font-bebas mb-4">Levesek</h2>
             <div className="space-y-6">
               {loading
                 ? Array.from({ length: 3 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full rounded-lg" />
+                    <Skeleton
+                      key={index}
+                      className="sm:h-[47vh] xl:h-[33.33vh] w-full rounded-lg"
+                    />
                   ))
                 : soups.map((soup) => (
                     <BigFoodCard key={soup.id} food={soup} color="orange" />
@@ -121,7 +142,10 @@ const DailyMenu = () => {
             <div className="grid gap-6 sm:grid-cols-1 xl:grid-cols-2">
               {loading
                 ? Array.from({ length: 6 }).map((_, index) => (
-                    <Skeleton key={index} className="h-80 w-full rounded-lg" />
+                    <Skeleton
+                      key={index}
+                      className="sm:h-[47vh] xl:h-[33.33vh] w-full rounded-lg"
+                    />
                   ))
                 : mainCourses.map((mainCourse) => (
                     <BigFoodCard

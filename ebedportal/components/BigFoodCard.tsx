@@ -71,14 +71,14 @@ const BigFoodCard = ({ food, color }: CardProps) => {
       <Card
         className={cn(
           color === "green" ? "card-bg-green" : "card-bg-orange",
-          "flex flex-col sm:flex-row items-center md:items-start gap-6 lg:h-80",
+          "flex flex-col sm:flex-row items-center md:items-start sm:h-[47vh] xl:h-[33.33vh]",
         )}
       >
-        <CardContent className="flex-1 text-center md:text-left">
+        <CardContent className="sm:w-[38.33%] text-pretty md:text-left sm:pr-0 ">
           <CardHeader className="text-2xl font-bold">
             {food.fullName}
           </CardHeader>
-          <CardDescription className="secondary-text">
+          <CardDescription className="secondary-text text-pretty">
             {food.description}
           </CardDescription>
           {food.allergens && (
@@ -108,11 +108,11 @@ const BigFoodCard = ({ food, color }: CardProps) => {
 
         <CardContent className="flex-1 flex flex-col items-center justify-center">
           {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
-            <div className={"pt-3"}>
+            <div className={"pt-[2vh]"}>
               <img
                 src={food.imageUrl}
                 alt={food.fullName}
-                className=" object-contain rounded-lg h8"
+                className=" sm:max-h-[40vh] xl:max-h-[28.33vh] rounded-lg h8"
               />
             </div>
           ) : (
@@ -124,13 +124,13 @@ const BigFoodCard = ({ food, color }: CardProps) => {
                 .icon,
               {
                 className:
-                  "h-32 w-32 lg:w-[80%] lg:h-[80%] text-white w-full h-full object-cover rounded-lg",
+                  "sm:max-h-[40vh] xl:max-h-[28.33vh] text-white w-full h-full object-cover rounded-lg",
               },
             )
           )}
 
           {food.price && (
-            <CardDescription className="secondary-text pt-1">
+            <CardDescription className="secondary-text text-lg pt-1">
               {food.price.toString()} Ft
             </CardDescription>
           )}

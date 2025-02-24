@@ -18,7 +18,7 @@
   .secondary-text {
     @apply text-zinc-800 dark:text-zinc-300;
   }
-  .bg-primary {
+  .bg-main {
     @apply dark:bg-zinc-400 bg-zinc-700;
   }
   .card-bg-green {
@@ -90,6 +90,7 @@
   }
 
 }
+
 
 
 
