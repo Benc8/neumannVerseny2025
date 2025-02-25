@@ -39,13 +39,13 @@ const Header = async () => {
           <div className="flex items-center gap-4">
             <Link
               href="/order"
-              className="cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+              className="cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors text-xl"
             >
               Rendelés
             </Link>
             <Link href="/my-profile" className="cursor-pointer">
-              <Avatar>
-                <AvatarFallback className="text-white bg-zinc-500 cursor-pointer">
+              <Avatar className={"w-[3.7rem] h-[3.7rem] "}>
+                <AvatarFallback className="text-white text-xl bg-zinc-500 cursor-pointer">
                   {getInitials(session?.user?.email || "EE")}
                 </AvatarFallback>
               </Avatar>

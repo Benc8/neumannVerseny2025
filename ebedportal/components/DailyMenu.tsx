@@ -77,9 +77,9 @@ const DailyMenu = () => {
 
   return (
     <div className={"xl:pl-[7%] xl:pr-[7%]"}>
-      <div className="flex items-center justify-center space-x-4 mb-4">
+      <div className="flex items-center justify-center mb-4">
         <Button
-          className={"hidden sm:inline-block w-32"}
+          className={"hidden sm:inline-block w-32 m-0 p-0"}
           onClick={() => changeDate(-1)}
         >
           Előző
@@ -88,7 +88,7 @@ const DailyMenu = () => {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="flex flex-col h-auto w-60 sm:w-40"
+              className="flex flex-col h-auto w-60 sm:w-40 "
             >
               {format(date, "eeee")}
               <span className="text-sm text-gray-500">
