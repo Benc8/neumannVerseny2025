@@ -232,7 +232,7 @@ const OrderDailyMenu = () => {
       )}
 
       {!showEmptyState && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center ">
           <Button
             size="lg"
             onClick={handleSubmitOrder}
@@ -242,12 +242,12 @@ const OrderDailyMenu = () => {
             className="w-full max-w-md"
           >
             {isOrdering ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-xl">
                 <span className="animate-spin">⏳</span>
                 Feldolgozás...
               </span>
             ) : (
-              "Rendelés leadása"
+              <span className={"text-xl"}>Rendelés leadása</span>
             )}
           </Button>
         </div>

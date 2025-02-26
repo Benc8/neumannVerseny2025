@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getUserRole } from "@/lib/actions/foodFetch";
 import OrderShow from "@/components/OrderShow";
+import { LogOut } from "lucide-react";
 
 const Page = async () => {
   const session = await auth();
@@ -17,13 +18,13 @@ const Page = async () => {
 
   return (
     <>
-      <nav className="flex items-center justify-between p-4 border-b">
+      <nav className="flex items-center justify-between pt-5 border-b">
         <div className="flex gap-4 items-center">
           {/* Conditionally show admin link */}
           {role === "ADMIN" && (
             <Link
               href="/admin"
-              className="text-foreground hover:text-muted-foreground transition-colors cursor-pointer underline-offset-4 hover:underline"
+              className="font-bebas text-2xl cursor-pointer underline-offset-4 hover:underline"
             >
               Admin Panel
             </Link>
@@ -39,13 +40,14 @@ const Page = async () => {
         >
           <Button
             variant="link"
-            className="text-foreground hover:text-muted-foreground p-0 h-auto cursor-pointer"
+            className="font-bebas text-2xl cursor-pointer underline-offset-4 hover:underlines"
           >
             Kijelentkezés
           </Button>
         </form>
       </nav>
-      <div className={"pt-2"}>
+
+      <div className={"pt-6"}>
         <OrderShow />
       </div>
     </>

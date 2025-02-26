@@ -71,70 +71,73 @@ const BigFoodCard = ({ food, color }: CardProps) => {
       <Card
         className={cn(
           color === "green" ? "card-bg-green" : "card-bg-orange",
-          "flex flex-col sm:flex-row items-center md:items-start sm:h-[47vh] xl:h-[33.33vh]",
+          "",
         )}
       >
-        <CardContent className="sm:w-[38.33%] text-pretty md:text-left sm:pr-0 ">
-          <CardHeader className="text-2xl font-bold">
-            {food.fullName}
-          </CardHeader>
-          <CardDescription className="secondary-text text-pretty">
-            {food.description}
-          </CardDescription>
-          {food.allergens && (
-            <CardFooter className="flex gap-2 pt-5">
-              {food.allergens.map((allergen) => {
-                const allergenData = getAllergenData(allergen);
-                return allergenData ? (
-                  <Tooltip key={allergen}>
-                    {" "}
-                    {/* ✅ Moved key here */}
-                    <TooltipTrigger asChild>
-                      <span className="cursor-pointer">
-                        {React.createElement(allergenData.icon, {
-                          className: "w-5 h-5",
-                        })}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent className="portalColors">
-                      {allergenData.label}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : null;
-              })}
-            </CardFooter>
-          )}
-        </CardContent>
+        <CardHeader className="text-2xl font-bold text-center">
+          {food.fullName}
+        </CardHeader>
+        <div
+          className={"flex flex-col sm:flex-row items-center md:items-start"}
+        >
+          <CardContent className="sm:max-w-[45%] text-pretty md:text-left sm:pr-0 ">
+            <CardDescription className="secondary-text text-pretty">
+              {food.description}
+            </CardDescription>
+            {food.allergens && (
+              <CardFooter className="flex gap-2 pt-5">
+                {food.allergens.map((allergen) => {
+                  const allergenData = getAllergenData(allergen);
+                  return allergenData ? (
+                    <Tooltip key={allergen}>
+                      {" "}
+                      {/* ✅ Moved key here */}
+                      <TooltipTrigger asChild>
+                        <span className="cursor-pointer">
+                          {React.createElement(allergenData.icon, {
+                            className: "w-5 h-5",
+                          })}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent className="portalColors">
+                        {allergenData.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : null;
+                })}
+              </CardFooter>
+            )}
+          </CardContent>
 
-        <CardContent className="flex-1 flex flex-col items-center justify-center">
-          {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
-            <div className={"pt-[2vh]"}>
+          <CardContent className="p-0 mr-4 w-full flex flex-col items-center justify-center">
+            {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
               <img
                 src={food.imageUrl}
                 alt={food.fullName}
-                className=" sm:max-h-[40vh] xl:max-h-[28.33vh] rounded-lg h8"
+                className=" sm:max-h-[40vh] xl:max-h-[28.33vh] rounded-lg h8 box-border "
               />
-            </div>
-          ) : (
-            food.type &&
-            foodIcons.find((icon) => icon.value.toUpperCase() === food.type)
-              ?.icon &&
-            React.createElement(
-              foodIcons.find((icon) => icon.value.toUpperCase() === food.type)!
-                .icon,
-              {
-                className:
-                  "sm:max-h-[40vh] xl:max-h-[28.33vh] text-white w-full h-full object-cover rounded-lg",
-              },
-            )
-          )}
+            ) : (
+              food.type &&
+              foodIcons.find((icon) => icon.value.toUpperCase() === food.type)
+                ?.icon &&
+              React.createElement(
+                foodIcons.find(
+                  (icon) => icon.value.toUpperCase() === food.type,
+                )!.icon,
+                {
+                  className:
+                    "sm:max-h-[40vh] xl:max-h-[28.33vh] text-white w-full h-full object-cover rounded-lg",
+                },
+              )
+            )}
 
-          {food.price && (
-            <CardDescription className="secondary-text text-lg pt-1">
-              {food.price.toString()} Ft
-            </CardDescription>
-          )}
-        </CardContent>
+            {food.price && (
+              <CardDescription className="secondary-text text-lg pt-1 pb-4">
+                {food.price.toString()} Ft
+              </CardDescription>
+            )}
+          </CardContent>
+        </div>
       </Card>
     </TooltipProvider>
   );
