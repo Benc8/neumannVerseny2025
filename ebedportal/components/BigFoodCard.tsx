@@ -109,12 +109,12 @@ const BigFoodCard = ({ food, color }: CardProps) => {
             )}
           </CardContent>
 
-          <CardContent className="p-0 mr-4 w-full flex flex-col items-center justify-center">
+          <CardContent className="sm:p-0 sm:mr-4 w-full flex flex-col items-center justify-center">
             {food.imageUrl !== config.env.imagekit.urlEndpoint ? (
               <img
                 src={food.imageUrl}
                 alt={food.fullName}
-                className=" sm:max-h-[40vh] xl:max-h-[28.33vh] rounded-lg h8 box-border "
+                className=" sm:max-h-[40vh] xl:max-h-[28.33vh] rounded-lg box-border "
               />
             ) : (
               food.type &&
@@ -132,7 +132,7 @@ const BigFoodCard = ({ food, color }: CardProps) => {
             )}
 
             {food.price && (
-              <CardDescription className="secondary-text text-lg pt-1 pb-4">
+              <CardDescription className="secondary-text text-lg pt-1 sm:pb-4">
                 {food.price.toString()} Ft
               </CardDescription>
             )}

@@ -20,7 +20,7 @@ import Link from "next/link";
 import { signInWithCredentials } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { getServerSideProps } from "@/lib/actions/foodFetch";
+import GoogleSignIn from "@/components/ui/GoogleSignIn";
 
 const Page = () => {
   const router = useRouter();
@@ -108,6 +108,7 @@ const Page = () => {
             >
               Bejelentkezés
             </Button>
+            <GoogleSignIn />
             <FormDescription className="text-gray-600 dark:text-gray-400 text-center text-sm mt-4">
               Nincs még fiókod?{" "}
               <Link

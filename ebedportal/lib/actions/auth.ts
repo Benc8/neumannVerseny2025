@@ -1,5 +1,5 @@
 "use server";
-
+//this is the actions/auth.ts file
 import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";

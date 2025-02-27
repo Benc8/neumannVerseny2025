@@ -324,6 +324,7 @@ export interface OrderSummary {
 
 export async function getUserRole(userId: string): Promise<string> {
   try {
+    console.log(userId);
     const user = await db
       .select()
       .from(users)

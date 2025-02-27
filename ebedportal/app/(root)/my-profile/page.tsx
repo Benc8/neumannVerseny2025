@@ -5,7 +5,21 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getUserRole } from "@/lib/actions/foodFetch";
 import OrderShow from "@/components/OrderShow";
-import { LogOut } from "lucide-react";
+import { FilePenLine } from "lucide-react";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Page = async () => {
   const session = await auth();
@@ -29,6 +43,35 @@ const Page = async () => {
               Admin Panel
             </Link>
           )}
+        </div>
+
+        <div className="flex gap-4 items-center">
+          <Dialog>
+            <DialogTrigger>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <FilePenLine />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <h4>
+                      Állíts be felhasználóképet, hogy a fiókodat el tudják
+                      fogadni!
+                    </h4>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </DialogTrigger>
+            <DialogContent className={"bg-main"}>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Logout form */}
