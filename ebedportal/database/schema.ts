@@ -24,6 +24,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   status: STATUS_EMUM("status").notNull().default("PENDING"),
   role: ROLE_EMUM("role").notNull().default("USER"),
+  imageUrl: text("image_url"),
 });
 
 export const foods = pgTable("foods", {
