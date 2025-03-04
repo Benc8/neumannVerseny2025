@@ -15,6 +15,10 @@ const items = [
     title: "Eltávolítás",
     url: "/admin/delete",
   },
+  {
+    title: "Elfogadás",
+    url: "/admin/approve",
+  },
 ];
 
 export default function DashboardTitle() {

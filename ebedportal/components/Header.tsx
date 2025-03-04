@@ -5,9 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
 import Image from "next/image";
 import logo from "../public/logo.png";
+import { getUserImg } from "@/lib/actions/foodFetch";
 
 const Header = async () => {
   const session = await auth();
+  let userImg = "";
+  if (session) {
+    userImg = await getUserImg(session?.user?.id!);
+  }
   return (
     <header className="flex fixed top-1 justify-between w-full p-5 text-zinc-900 dark:text-zinc-100">
       {/* Logo */}
@@ -45,6 +50,7 @@ const Header = async () => {
             </Link>
             <Link href="/my-profile" className="cursor-pointer">
               <Avatar className={"w-[3.7rem] h-[3.7rem] "}>
+                <AvatarImage src={userImg} />
                 <AvatarFallback className="text-white text-xl bg-zinc-500 cursor-pointer">
                   {getInitials(session?.user?.email || "EE")}
                 </AvatarFallback>

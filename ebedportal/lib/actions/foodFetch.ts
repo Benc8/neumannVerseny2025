@@ -337,6 +337,40 @@ export async function getUserRole(userId: string): Promise<string> {
   }
 }
 
+export async function getUserStatus(userId: string): Promise<string> {
+  try {
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .execute();
+    if (!user[0].status!) {
+      return "";
+    }
+    return user[0].status!;
+  } catch (error) {
+    console.error("Error fetching user status:", error);
+    throw new Error("Failed to fetch user status");
+  }
+}
+
+export async function getUserImg(userId: string): Promise<string> {
+  try {
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .execute();
+    if (!user[0].imageUrl!) {
+      return "";
+    }
+    return user[0].imageUrl!;
+  } catch (error) {
+    console.error("Error fetching user status:", error);
+    throw new Error("Failed to fetch user status");
+  }
+}
+
 export async function getOrderStatistics(date?: Date): Promise<OrderSummary[]> {
   try {
     let dateFilter;
@@ -426,5 +460,47 @@ export async function getUserOrderedFoodForDay(
   } catch (error) {
     console.error("Error fetching user's ordered food for the day:", error);
     throw new Error("Failed to fetch user's ordered food for the day");
+  }
+}
+
+// Update user's image
+export async function updateUserImage(userId: string, filePath: string) {
+  try {
+    const updatedUser = await db
+      .update(users)
+      .set({ imageUrl: config.env.imagekit.urlEndpoint + filePath })
+      .where(eq(users.id, userId))
+      .returning()
+      .execute();
+
+    if (updatedUser.length === 0) {
+      throw new Error("User not found");
+    }
+
+    return updatedUser[0];
+  } catch (error) {
+    console.error("Error updating user image:", error);
+    throw new Error("Failed to update user image");
+  }
+}
+
+// Get pending users with profile images
+export async function getPendingUsersWithImage() {
+  try {
+    const pendingUsers = await db
+      .select()
+      .from(users)
+      .where(
+        and(
+          sql`${users.imageUrl} IS NOT NULL AND ${users.imageUrl} != ''`,
+          eq(users.status, "PENDING"),
+        ),
+      )
+      .execute();
+
+    return pendingUsers;
+  } catch (error) {
+    console.error("Error fetching pending users with images:", error);
+    throw new Error("Failed to fetch pending users with images");
   }
 }
