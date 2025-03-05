@@ -19,6 +19,10 @@ const items = [
     title: "Elfogadás",
     url: "/admin/approve",
   },
+  {
+    title: "Beolvasás",
+    url: "/admin/scan",
+  },
 ];
 
 export default function DashboardTitle() {

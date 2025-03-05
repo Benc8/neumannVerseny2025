@@ -1,7 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, Plus, Delete, ArrowLeft, BookOpenCheck } from "lucide-react";
+import {
+  Home,
+  Plus,
+  Delete,
+  ArrowLeft,
+  BookOpenCheck,
+  ScanQrCode,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +40,11 @@ const items = [
     title: "Elfogadás",
     url: "/admin/approve",
     icon: BookOpenCheck,
+  },
+  {
+    title: "Beolvasás",
+    url: "/admin/scan",
+    icon: ScanQrCode,
   },
 ];
 
