@@ -337,6 +337,62 @@ export async function getUserRole(userId: string): Promise<string> {
   }
 }
 
+export async function getCurrentUserOrderedFoodForDay(
+  date: Date,
+): Promise<OrderedFood[]> {
+  // Get the current user's session.
+  const session = await auth();
+  if (!session?.user?.id) {
+    // Redirect to login if not authenticated.
+    redirect("/login");
+  }
+  const userId = session.user.id;
+
+  try {
+    // Calculate the start and end of the day.
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Fetch the current user's order items for the day.
+    const result = await db
+      .select({
+        foodId: foods.id,
+        foodName: foods.fullName,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        totalAmount: sql<number>`${orderItems.quantity} * ${orderItems.price}`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .innerJoin(foods, eq(orderItems.foodId, foods.id))
+      .where(
+        and(
+          eq(orders.userId, userId),
+          gte(orders.createdAt, startOfDay),
+          lte(orders.createdAt, endOfDay),
+        ),
+      )
+      .execute();
+
+    return result.map((item) => ({
+      foodId: item.foodId,
+      foodName: item.foodName,
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+      totalAmount: Number(item.totalAmount),
+    }));
+  } catch (error) {
+    console.error(
+      "Error fetching current user's ordered food for the day:",
+      error,
+    );
+    throw new Error("Failed to fetch current user's ordered food for the day");
+  }
+}
+
 export async function getUserStatus(userId: string): Promise<string> {
   try {
     const user = await db
