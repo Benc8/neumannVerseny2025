@@ -18,7 +18,7 @@ import config from "@/lib/config";
 type Food = typeof foods.$inferSelect;
 
 const SmallFoodCard = ({ food }: { food: Food }) => (
-  <Card className="flex items-center justify-between p-2 h-16">
+  <Card className="flex items-center justify-between p-2 h-16 w-auto">
     <div className="flex-1 min-w-0">
       <h3 className="font-medium truncate">{food.fullName}</h3>
       <p className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">

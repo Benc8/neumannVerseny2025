@@ -41,7 +41,7 @@ const Page = () => {
       router.push("/");
     } else {
       toast({
-        title: "Hiba",
+        title: "Helytelen adatok",
         description: result?.message,
         variant: "destructive",
       });

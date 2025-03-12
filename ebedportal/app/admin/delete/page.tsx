@@ -84,7 +84,7 @@ const Page = () => {
   const showEmptyState = !loading && allFoods.length === 0;
 
   return (
-    <div>
+    <div className={"overflow-hidden"}>
       {/* Date Selection */}
       <div className="flex items-center justify-center mb-4">
         <Button
@@ -142,7 +142,7 @@ const Page = () => {
                 : soups.map((soup) => (
                     <div
                       key={soup.id}
-                      className="flex items-center gap-2 w-full"
+                      className="flex items-center gap-2 max-w-[65%]"
                     >
                       <SmallFoodCard food={soup} />
                       <Button
@@ -169,7 +169,7 @@ const Page = () => {
                 : mainCourses.map((mainCourse) => (
                     <div
                       key={mainCourse.id}
-                      className="flex items-center gap-2 w-full"
+                      className="flex items-center gap-2 max-w-[65%]"
                     >
                       <SmallFoodCard food={mainCourse} />
                       <Button

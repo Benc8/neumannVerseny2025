@@ -42,7 +42,7 @@ const Page = () => {
       router.push("/sign-in");
     } else {
       toast({
-        title: "Hiba",
+        title: "Helytelen adatok",
         description: result?.message,
         variant: "destructive",
       });

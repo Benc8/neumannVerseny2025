@@ -99,7 +99,10 @@ const Page = () => {
                   <Skeleton key={i} className="h-16 w-full mb-2 rounded-lg" />
                 ))
               : foods.map((food) => (
-                  <div key={food.id} className="mb-4 space-y-2">
+                  <div
+                    key={food.id}
+                    className="mb-4 space-y-2 w-full box-border"
+                  >
                     <SmallFoodCard food={food} />
                     <div className="flex gap-2 ml-2">
                       <Button
