@@ -324,7 +324,6 @@ export interface OrderSummary {
 
 export async function getUserRole(userId: string): Promise<string> {
   try {
-    console.log(userId);
     const user = await db
       .select()
       .from(users)
@@ -475,50 +474,6 @@ export interface OrderedFood {
   totalAmount: number;
 }
 
-export async function getUserOrderedFoodForDay(
-  userId: string,
-  date: Date,
-): Promise<OrderedFood[]> {
-  try {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const result = await db
-      .select({
-        foodId: foods.id,
-        foodName: foods.fullName,
-        quantity: orderItems.quantity,
-        price: orderItems.price,
-        totalAmount: sql<number>`${orderItems.quantity} * ${orderItems.price}`,
-      })
-      .from(orderItems)
-      .innerJoin(orders, eq(orderItems.orderId, orders.id))
-      .innerJoin(foods, eq(orderItems.foodId, foods.id))
-      .where(
-        and(
-          eq(orders.userId, userId), // Filter by user ID
-          gte(orders.createdAt, startOfDay), // Filter by start of day
-          lte(orders.createdAt, endOfDay), // Filter by end of day
-        ),
-      )
-      .execute();
-
-    return result.map((item) => ({
-      foodId: item.foodId,
-      foodName: item.foodName,
-      quantity: Number(item.quantity),
-      price: Number(item.price),
-      totalAmount: Number(item.totalAmount),
-    }));
-  } catch (error) {
-    console.error("Error fetching user's ordered food for the day:", error);
-    throw new Error("Failed to fetch user's ordered food for the day");
-  }
-}
-
 // Update user's image
 export async function updateUserImage(userId: string, filePath: string) {
   try {
@@ -558,5 +513,48 @@ export async function getPendingUsersWithImage() {
   } catch (error) {
     console.error("Error fetching pending users with images:", error);
     throw new Error("Failed to fetch pending users with images");
+  }
+}
+
+export async function getUserOrderedFoodForDay(
+  userId: string,
+): Promise<OrderedFood[]> {
+  try {
+    const currentDate = new Date();
+    const startOfDay = new Date(currentDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(currentDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const result = await db
+      .select({
+        foodId: foods.id,
+        foodName: foods.fullName,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        totalAmount: sql<number>`${orderItems.quantity} * ${orderItems.price}`,
+      })
+      .from(orderItems)
+      .innerJoin(orders, eq(orderItems.orderId, orders.id))
+      .innerJoin(foods, eq(orderItems.foodId, foods.id))
+      .where(
+        and(
+          eq(orders.userId, userId),
+          gte(orders.createdAt, startOfDay),
+          lte(orders.createdAt, endOfDay),
+        ),
+      )
+      .execute();
+
+    return result.map((item) => ({
+      foodId: item.foodId,
+      foodName: item.foodName,
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+      totalAmount: Number(item.totalAmount),
+    }));
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw new Error("Nem sikerült lekérni a rendeléseket");
   }
 }

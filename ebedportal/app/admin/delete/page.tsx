@@ -144,7 +144,10 @@ const Page = () => {
                       key={soup.id}
                       className="flex items-center gap-2 max-w-[65%]"
                     >
-                      <SmallFoodCard food={soup} />
+                      <div className={"w-52 sm:w-[100%]"}>
+                        <SmallFoodCard food={soup} />
+                      </div>
+
                       <Button
                         variant="ghost"
                         size="icon"
@@ -171,7 +174,9 @@ const Page = () => {
                       key={mainCourse.id}
                       className="flex items-center gap-2 max-w-[65%]"
                     >
-                      <SmallFoodCard food={mainCourse} />
+                      <div className={"w-52 sm:w-[100%]"}>
+                        <SmallFoodCard food={mainCourse} />
+                      </div>
                       <Button
                         variant="ghost"
                         size="icon"

@@ -57,25 +57,19 @@ export const QrCodeGen = ({ userId }: { userId: string }) => {
         <DialogHeader>
           <DialogTitle>Felhasználói QR kód</DialogTitle>
           <DialogDescription>
-            Szkenneld be a kódot a felhasználói adatok ellenőrzéséhez
+            A QR kód ami tartalmazza a rendelésed adatait
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-4">
-          <div className="text-center">
-            <p className="font-medium">Felhasználó ID: {userId}</p>
-            {currentDate && (
-              <p className="text-sm text-muted-foreground">
-                Generálva: {currentDate}
-              </p>
-            )}
-          </div>
-
           <div className="p-4 bg-white rounded-lg">
             {QRCode && currentDate && (
               <QRCode value={qrData} size={256} level="H" includeMargin />
             )}
           </div>
+          <p className={"text-gray-700 text-sm text-center"}>
+            ezt a Qr kódot le is fótózhatod vagy ki is nyomtathatod
+          </p>
         </div>
       </DialogContent>
     </Dialog>
