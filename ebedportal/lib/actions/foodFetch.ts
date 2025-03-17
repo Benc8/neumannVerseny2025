@@ -374,6 +374,7 @@ export async function getCurrentUserOrderedFoodForDay(
           lte(orders.createdAt, endOfDay),
         ),
       )
+      .limit(2)
       .execute();
 
     return result.map((item) => ({

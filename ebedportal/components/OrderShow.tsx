@@ -27,12 +27,12 @@ const OrderShow = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Clear the current orders immediately when the date changes
+    // Clear previous orders immediately when the date changes
     setUserOrders([]);
+    setLoading(true);
 
     const fetchOrders = async () => {
       try {
-        setLoading(true);
         const orders = await getCurrentUserOrderedFoodForDay(date);
         setUserOrders(orders);
       } catch (error) {
@@ -47,12 +47,13 @@ const OrderShow = () => {
 
   // Change the selected date by a number of days.
   const changeDate = (days: number) => {
+    setUserOrders([]);
     setDate((prevDate) => addDays(prevDate, days));
   };
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className={"text-center text-4xl font-bebas pb-4"}>Rendeléseid</h1>
+      <h1 className="text-center text-4xl font-bebas pb-4">Rendeléseid</h1>
       {/* Date Selector */}
       <div className="flex items-center justify-center mb-6 gap-4">
         <Button
