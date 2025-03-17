@@ -27,6 +27,9 @@ const OrderShow = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Clear the current orders immediately when the date changes
+    setUserOrders([]);
+
     const fetchOrders = async () => {
       try {
         setLoading(true);
@@ -111,10 +114,10 @@ const OrderShow = () => {
             >
               <div>
                 <p className="text-lg font-semibold">{order.foodName}</p>
-                <p className="text-sm ">{order.price} Ft / adag</p>
+                <p className="text-sm">{order.price} Ft / adag</p>
               </div>
               <div className="text-right">
-                <p className="text-sm ">Mennyiség:</p>
+                <p className="text-sm">Mennyiség:</p>
                 <p className="text-lg font-bold">{order.quantity}x</p>
               </div>
             </div>

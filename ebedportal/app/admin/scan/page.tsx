@@ -1,7 +1,7 @@
 // pages/scan-qr.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserImg, getUserOrderedFoodForDay } from "@/lib/actions/foodFetch";
-import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 interface OrderData {
   foodId: string;
@@ -61,6 +61,8 @@ export default function ScanQRPage() {
 
   const handleScan = async (detectedCodes: any[]) => {
     if (!detectedCodes?.[0]?.rawValue) return;
+    // Ignore new scans if a result already exists.
+    if (result) return;
 
     try {
       const parsedData = JSON.parse(detectedCodes[0].rawValue);
@@ -76,7 +78,7 @@ export default function ScanQRPage() {
         getUserImg(parsedData.userId),
         getUserOrderedFoodForDay(parsedData.userId),
       ]);
-
+      console.log(orders);
       setResult({ userId: parsedData.userId });
       setUserImage(image);
       setUserOrders(orders);
@@ -86,6 +88,15 @@ export default function ScanQRPage() {
     } finally {
       setLoadingData(false);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+    // Reset state so that a new QR code can be scanned
+    setResult(null);
+    setUserImage("");
+    setUserOrders([]);
+    setError(null);
   };
 
   return (
@@ -113,10 +124,7 @@ export default function ScanQRPage() {
       )}
 
       {hasCameraAccess && (
-        <div className="flex-1 relative rounded-xl overflow-hidden border-4 border-gray-200 shadow-lg min-h-[60vh]">
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center text-white text-lg font-medium">
-            Keresés QR kódra...
-          </div>
+        <div className="flex-1 relative overflow-hidden shadow-lg">
           <Scanner
             key={selectedCamera}
             onScan={handleScan}
@@ -139,68 +147,73 @@ export default function ScanQRPage() {
       )}
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-2xl">
+        {/* On mobile: full width; on larger screens: wider and centered */}
+        <DialogContent className="portalColors w-full max-w-4xl h-full min-h-[80vh] mx-auto">
           <DialogHeader>
-            <DialogTitle>Felhasználói adatok</DialogTitle>
+            <DialogTitle>Rendelés adatai</DialogTitle>
           </DialogHeader>
-
           {result && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4 mt-4">
+              {/* Left: Orders and user info */}
+              <div className="flex-1 md:w-1/3 space-y-4">
+                {loadingData ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((_, i) => (
+                      <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : userOrders.length === 0 ? (
+                  <div className="text-center py-6">
+                    <p className="text-gray-600 text-lg">
+                      Nincs rendelés erre a napra
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {userOrders.map((order) => (
+                      <div
+                        key={order.foodId}
+                        className="flex items-center justify-between p-4 rounded-lg shadow-sm border"
+                      >
+                        <div>
+                          <h3 className="text-lg font-medium">
+                            {order.foodName}
+                          </h3>
+                          <p>{order.price} Ft / adag</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm">Mennyiség:</p>
+                          <p className="text-lg font-bold">{order.quantity}x</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Right: User image */}
+              <div className="flex-1 md:w-full flex items-center justify-center">
                 {userImage ? (
                   <img
                     src={userImage}
                     alt="Felhasználói profil"
-                    className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+                    className="object-cover rounded-lg w-full h-full max-w-md max-h-md"
                   />
                 ) : (
-                  <div className="h-20 w-20 rounded-full bg-gray-200 border-2 border-gray-300" />
+                  <div className="w-full h-full max-w-md max-h-md rounded-lg bg-gray-200 border-2 border-gray-300" />
                 )}
-                <div>
-                  <p className="text-lg font-semibold">
-                    Felhasználó ID: {result.userId}
-                  </p>
-                  <p className="text-gray-600">
-                    Dátum: {format(new Date(), "yyyy-MM-dd")}
-                  </p>
-                </div>
               </div>
-
-              {loadingData ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((_, i) => (
-                    <Skeleton key={i} className="h-20 w-full rounded-lg" />
-                  ))}
-                </div>
-              ) : userOrders.length === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-gray-600 text-lg">
-                    Nincs rendelés erre a napra
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {userOrders.map((order) => (
-                    <div
-                      key={order.foodId}
-                      className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border"
-                    >
-                      <div className="flex-1">
-                        <h3 className="text-lg font-medium">
-                          {order.foodName}
-                        </h3>
-                        <p className="text-gray-600">{order.price} Ft / adag</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Mennyiség:</p>
-                        <p className="text-lg font-bold">{order.quantity}x</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           )}
+          <div className="mt-4 flex justify-center">
+            <Button
+              onClick={handleCloseDialog}
+              className="w-1/2 h-1/2 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800
+              text-white font-bold rounded-lg shadow-lg transition-all duration-300
+              transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+            >
+              OK
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 

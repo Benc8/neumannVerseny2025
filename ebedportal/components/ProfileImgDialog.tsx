@@ -57,7 +57,7 @@ export const ProfileImageDialog = ({ userId }: { userId: string }) => {
           </Tooltip>
         </TooltipProvider>
       </DialogTrigger>
-      <DialogContent className="bg-main">
+      <DialogContent className="portalColors">
         <DialogHeader>
           <DialogTitle>Fénykép beállítása</DialogTitle>
           <DialogDescription>

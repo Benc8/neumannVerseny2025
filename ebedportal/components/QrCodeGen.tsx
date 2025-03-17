@@ -53,7 +53,7 @@ export const QrCodeGen = ({ userId }: { userId: string }) => {
           </Tooltip>
         </TooltipProvider>
       </DialogTrigger>
-      <DialogContent className="bg-main max-w-md">
+      <DialogContent className="portalColors max-w-md">
         <DialogHeader>
           <DialogTitle>Felhasználói QR kód</DialogTitle>
           <DialogDescription>
@@ -61,13 +61,13 @@ export const QrCodeGen = ({ userId }: { userId: string }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-4">
-          <div className="p-4 bg-white rounded-lg">
+        <div className="flex flex-col items-center gap-4 ">
+          <div className="p-4  rounded-lg">
             {QRCode && currentDate && (
               <QRCode value={qrData} size={256} level="H" includeMargin />
             )}
           </div>
-          <p className={"text-gray-700 text-sm text-center"}>
+          <p className={"text-gray-700 dark:text-gray-400 text-sm text-center"}>
             ezt a Qr kódot le is fótózhatod vagy ki is nyomtathatod
           </p>
         </div>
